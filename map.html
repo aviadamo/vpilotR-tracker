@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"
+>
 <title>vPilot Reimagined</title>
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
 html,body{
     margin:0;
     width:100%;
@@ -13,8 +21,16 @@ html,body{
     overflow:hidden;
     background:#080e15;
     color:white;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
 }
+/* =====================================================
+   TOP BAR
+===================================================== */
 #topbar{
     position:fixed;
     top:0;
@@ -25,9 +41,12 @@ html,body{
     display:flex;
     align-items:center;
     padding:0 12px;
-    background:rgba(7,12,18,.97);
-    border-bottom:1px solid #263645;
-    backdrop-filter:blur(15px);
+    background:
+        rgba(7,12,18,.97);
+    border-bottom:
+        1px solid #263645;
+    backdrop-filter:
+        blur(15px);
 }
 .logo{
     font-size:17px;
@@ -35,16 +54,21 @@ html,body{
     white-space:nowrap;
     margin-right:15px;
 }
-.logo span{color:#4da3ff}
+.logo span{
+    color:#4da3ff;
+}
 .nav{
     display:flex;
     gap:5px;
 }
 .nav button{
-    border:1px solid transparent;
-    background:transparent;
+    border:
+        1px solid transparent;
+    background:
+        transparent;
     color:#9aa9b7;
-    padding:8px 11px;
+    padding:
+        8px 11px;
     border-radius:7px;
     font-size:13px;
 }
@@ -60,11 +84,16 @@ html,body{
 }
 .actions button{
     background:#131e29;
-    border:1px solid #354858;
+    border:
+        1px solid #354858;
     color:white;
     border-radius:7px;
-    padding:8px 10px;
+    padding:
+        8px 10px;
 }
+/* =====================================================
+   MAP VIEWPORT
+===================================================== */
 #map{
     position:fixed;
     top:64px;
@@ -75,49 +104,107 @@ html,body{
     background:#111923;
     touch-action:none;
 }
+/*
+   IMPORTANT:
+   Everything inside #world moves together.
+   This fixes the aircraft-following-camera problem.
+*/
+#world{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    transform-origin:
+        50% 50%;
+    pointer-events:none;
+}
+/* =====================================================
+   MAP IMAGE
+===================================================== */
 #mapImage{
     position:absolute;
     left:50%;
     top:50%;
     width:1200px;
-    transform:translate(-50%,-50%) translate(0,0) scale(1);
-    transform-origin:center;
+    transform:
+        translate(-50%,-50%);
     user-select:none;
     pointer-events:none;
 }
-/* AIRCRAFT */
+/* =====================================================
+   AIRCRAFT
+===================================================== */
 .aircraft{
     position:absolute;
-    left:55%;
-    top:42%;
-    width:55px;
-    height:55px;
-    transform:translate(-50%,-50%);
+    width:48px;
+    height:48px;
+    /*
+       x/y are MAP coordinates,
+       NOT screen percentages.
+    */
+    transform:
+        translate(-50%,-50%);
     cursor:pointer;
-    z-index:20;
+    z-index:50;
+    pointer-events:auto;
 }
-.aircraftIcon{
-    width:55px;
-    height:55px;
+/*
+   Yellow marker stays upright.
+   It does NOT rotate.
+*/
+.aircraftMarker{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:40px;
+    height:40px;
+    transform:
+        translate(-50%,-50%);
+    border-radius:50%;
+    background:#ffd400;
+    box-shadow:
+        0 2px 6px
+        rgba(0,0,0,.75);
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
-.aircraftIcon img{
-    width:100%;
-    height:100%;
+/*
+   Only the aircraft rotates.
+*/
+.aircraftPlane{
+    width:29px;
+    height:29px;
     object-fit:contain;
-    filter:drop-shadow(0 2px 3px rgba(0,0,0,.9));
+    display:block;
+    filter:
+        brightness(.12)
+        contrast(1.4);
+    transform-origin:
+        center center;
 }
+/* =====================================================
+   CALLSIGN
+===================================================== */
 .aircraftLabel{
     position:absolute;
-    left:48px;
-    top:12px;
+    left:43px;
+    top:6px;
     white-space:nowrap;
-    padding:3px 6px;
-    background:rgba(6,11,16,.94);
-    border:1px solid #3b4d5e;
+    padding:
+        3px 6px;
+    background:
+        rgba(6,11,16,.94);
+    border:
+        1px solid #3b4d5e;
     border-radius:5px;
     font-size:10px;
+    pointer-events:none;
 }
-/* CHARTS */
+/* =====================================================
+   CHARTS
+===================================================== */
 #charts{
     display:none;
     position:fixed;
@@ -132,10 +219,12 @@ html,body{
     height:58px;
     display:flex;
     align-items:center;
-    padding:0 14px;
+    padding:
+        0 14px;
     gap:10px;
     background:#0d151e;
-    border-bottom:1px solid #293a4a;
+    border-bottom:
+        1px solid #293a4a;
 }
 .chartTitle{
     font-weight:700;
@@ -145,38 +234,55 @@ html,body{
     margin-left:auto;
     width:220px;
     max-width:40%;
-    padding:9px 11px;
+    padding:
+        9px 11px;
     border-radius:7px;
-    border:1px solid #344858;
+    border:
+        1px solid #344858;
     background:#121d27;
     color:white;
+    outline:none;
 }
 #chartFrame{
     width:100%;
-    height:calc(100% - 58px);
+    height:
+        calc(100% - 58px);
     border:0;
+    background:#111923;
 }
-/* AIRCRAFT PANEL */
+/* =====================================================
+   AIRCRAFT PANEL
+===================================================== */
 #aircraftPanel{
     display:none;
     position:fixed;
     right:16px;
     top:80px;
-    width:315px;
-    max-width:calc(100% - 32px);
+    width:340px;
+    max-width:
+        calc(100% - 32px);
+    max-height:
+        calc(100% - 100px);
+    overflow:auto;
     z-index:1200;
-    background:rgba(8,14,21,.98);
-    border:1px solid #354858;
+    background:
+        rgba(8,14,21,.98);
+    border:
+        1px solid #354858;
     border-radius:13px;
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.55);
     overflow:hidden;
-    box-shadow:0 20px 50px rgba(0,0,0,.5);
 }
 .panelHeader{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:12px 14px;
-    border-bottom:1px solid #293a49;
+    padding:
+        12px 14px;
+    border-bottom:
+        1px solid #293a49;
 }
 .panelHeader button{
     border:0;
@@ -184,21 +290,36 @@ html,body{
     color:#9aa8b5;
     font-size:21px;
 }
-.planeImage{
-    height:135px;
+.planePhoto{
+    width:100%;
+    height:185px;
+    background:
+        linear-gradient(
+            135deg,
+            #172736,
+            #0c151e
+        );
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(135deg,#172736,#0c151e);
+    overflow:hidden;
 }
-.panelPlaneIcon{
-    width:100px;
-    height:100px;
-}
-.panelPlaneIcon img{
+.planePhoto img{
     width:100%;
     height:100%;
-    object-fit:contain;
+    object-fit:cover;
+}
+.photoPlaceholder{
+    text-align:center;
+    color:#82919f;
+}
+.photoPlaceholder .big{
+    font-size:55px;
+    margin-bottom:6px;
+}
+.photoPlaceholder small{
+    display:block;
+    font-size:11px;
 }
 .panelBody{
     padding:14px;
@@ -207,8 +328,13 @@ html,body{
     font-size:22px;
     font-weight:700;
 }
-.airline{
+.username{
     margin-top:3px;
+    color:#5faeff;
+    font-size:13px;
+}
+.airline{
+    margin-top:6px;
     color:#9caab8;
 }
 .aircraftType{
@@ -218,14 +344,16 @@ html,body{
 }
 .stats{
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:
+        1fr 1fr;
     gap:9px;
     margin-top:15px;
 }
 .stat{
     padding:9px;
     background:#131e29;
-    border:1px solid #263645;
+    border:
+        1px solid #263645;
     border-radius:7px;
 }
 .stat small{
@@ -242,10 +370,13 @@ html,body{
     margin-top:10px;
     padding:10px;
     background:#131e29;
-    border:1px solid #263645;
+    border:
+        1px solid #263645;
     border-radius:7px;
 }
-.route small{color:#71808d}
+.route small{
+    color:#71808d;
+}
 .route strong{
     display:block;
     margin-top:4px;
@@ -255,11 +386,14 @@ html,body{
     margin-top:11px;
     padding:10px;
     border-radius:7px;
-    border:1px solid #397eb8;
+    border:
+        1px solid #397eb8;
     background:#1d4f7a;
     color:white;
 }
-/* ZOOM */
+/* =====================================================
+   MAP CONTROLS
+===================================================== */
 .controls{
     position:fixed;
     right:14px;
@@ -272,9 +406,11 @@ html,body{
 .controls button{
     width:44px;
     height:44px;
-    background:rgba(8,14,21,.95);
+    background:
+        rgba(8,14,21,.95);
     color:white;
-    border:1px solid #3b4e60;
+    border:
+        1px solid #3b4e60;
     border-radius:8px;
     font-size:21px;
 }
@@ -283,52 +419,109 @@ html,body{
     right:14px;
     bottom:166px;
     z-index:700;
-    padding:5px 8px;
-    background:rgba(8,14,21,.9);
+    padding:
+        5px 8px;
+    background:
+        rgba(8,14,21,.9);
     color:#9aa8b5;
     border-radius:5px;
     font-size:11px;
 }
+/* =====================================================
+   MOBILE
+===================================================== */
+@media(max-width:700px){
+    .logo{
+        font-size:13px;
+        margin-right:5px;
+    }
+    .nav button{
+        padding:7px;
+        font-size:10px;
+    }
+    .actions button{
+        padding:7px;
+    }
+    .chartSearch{
+        width:130px;
+    }
+    #aircraftPanel{
+        left:8px;
+        right:8px;
+        width:auto;
+        top:72px;
+    }
+}
 </style>
 </head>
 <body>
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
 <div id="topbar">
     <div class="logo">
-        ✈️ vPilot <span>Reimagined</span>
+        ✈️ vPilot
+        <span>Reimagined</span>
     </div>
     <div class="nav">
-        <button class="active" onclick="showEnroute(this)">
+        <button
+            class="active"
+            onclick="showEnroute(this)">
             📡 Enroute
         </button>
-        <button onclick="showCharts(this)">
+        <button
+            onclick="showCharts(this)">
             🛬 Charts
         </button>
     </div>
     <div class="actions">
-        <button onclick="alert('Flight planner coming next!')">
+        <button
+            onclick="alert('Flight planner coming next!')">
             📝
         </button>
-        <button onclick="searchAircraft()">
+        <button
+            onclick="searchAircraft()">
             🔍
         </button>
     </div>
 </div>
+<!-- =====================================================
+     MAP
+===================================================== -->
 <div id="map">
-    <img
-        id="mapImage"
-        src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
-        alt="PTFS Enroute Chart"
-    >
-    <div
-        id="aircraft1"
-        class="aircraft"
-        onclick="showAircraft()">
-        <div id="aircraftIcon" class="aircraftIcon"></div>
-        <div class="aircraftLabel">
-            UAE123
+    <!--
+        EVERYTHING INSIDE THIS ELEMENT
+        MOVES TOGETHER.
+    -->
+    <div id="world">
+        <img
+            id="mapImage"
+            src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
+            alt="PTFS Enroute Chart"
+        >
+        <!-- =================================================
+             TEST AIRCRAFT
+        ================================================= -->
+        <div
+            id="aircraft1"
+            class="aircraft"
+            onclick="showAircraft()">
+            <div class="aircraftMarker">
+                <img
+                    id="aircraftPlane"
+                    class="aircraftPlane"
+                    alt="Aircraft"
+                >
+            </div>
+            <div class="aircraftLabel">
+                UAE123
+            </div>
         </div>
     </div>
 </div>
+<!-- =====================================================
+     CHARTS
+===================================================== -->
 <div id="charts">
     <div class="chartTop">
         <div class="chartTitle">
@@ -344,41 +537,91 @@ html,body{
         src="https://ptfs.app/charts">
     </iframe>
 </div>
+<!-- =====================================================
+     AIRCRAFT PANEL
+===================================================== -->
 <div id="aircraftPanel">
     <div class="panelHeader">
-        <strong>Aircraft</strong>
-        <button onclick="closeAircraft()">×</button>
+        <strong>
+            Aircraft
+        </strong>
+        <button
+            onclick="closeAircraft()">
+            ×
+        </button>
     </div>
-    <div class="planeImage">
-        <div id="panelPlaneIcon" class="panelPlaneIcon"></div>
+    <div
+        class="planePhoto"
+        id="planePhoto">
+        <div class="photoPlaceholder">
+            <div class="big">
+                ✈️
+            </div>
+            <small>
+                Aircraft photo unavailable
+            </small>
+        </div>
     </div>
     <div class="panelBody">
-        <div class="callsign">UAE123</div>
-        <div class="airline">Emirates</div>
-        <div id="panelAircraftType" class="aircraftType">
+        <div
+            class="callsign">
+            UAE123
+        </div>
+        <div
+            class="username">
+            Roblox: PilotExample
+        </div>
+        <div
+            class="airline">
+            Emirates
+        </div>
+        <div
+            id="panelAircraftType"
+            class="aircraftType">
             A380
         </div>
         <div class="stats">
             <div class="stat">
-                <small>Altitude</small>
-                <strong>FL350</strong>
+                <small>
+                    Altitude
+                </small>
+                <strong>
+                    FL350
+                </strong>
             </div>
             <div class="stat">
-                <small>Speed</small>
-                <strong>472 kt</strong>
+                <small>
+                    Speed
+                </small>
+                <strong>
+                    472 kt
+                </strong>
             </div>
             <div class="stat">
-                <small>Heading</small>
-                <strong>274°</strong>
+                <small>
+                    Heading
+                </small>
+                <strong
+                    id="panelHeading">
+                    274°
+                </strong>
             </div>
             <div class="stat">
-                <small>Squawk</small>
-                <strong>4201</strong>
+                <small>
+                    Aircraft
+                </small>
+                <strong>
+                    A380
+                </strong>
             </div>
         </div>
         <div class="route">
-            <small>Flight</small>
-            <strong>IRFD → IPPH</strong>
+            <small>
+                Flight
+            </small>
+            <strong>
+                IRFD → IPPH
+            </strong>
         </div>
         <button
             class="flightButton"
@@ -387,253 +630,496 @@ html,body{
         </button>
     </div>
 </div>
-<div id="zoom">100%</div>
+<!-- =====================================================
+     MAP CONTROLS
+===================================================== -->
+<div id="zoom">
+    100%
+</div>
 <div class="controls">
-    <button onclick="zoomIn()">+</button>
-    <button onclick="zoomOut()">−</button>
-    <button onclick="resetMap()">⟳</button>
+    <button
+        onclick="zoomIn()">
+        +
+    </button>
+    <button
+        onclick="zoomOut()">
+        −
+    </button>
+    <button
+        onclick="resetMap()">
+        ⟳
+    </button>
 </div>
 <script>
-/* =========================
-   MAP
-========================= */
-const map=document.getElementById("map");
-const image=document.getElementById("mapImage");
-let scale=1;
-let offsetX=0;
-let offsetY=0;
-let pointers=new Map();
-let lastX=0;
-let lastY=0;
-let lastDistance=null;
+/* =====================================================
+   MAP SYSTEM
+===================================================== */
+const map =
+    document.getElementById("map");
+const world =
+    document.getElementById("world");
+const image =
+    document.getElementById("mapImage");
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let pointers =
+    new Map();
+let lastX = 0;
+let lastY = 0;
+let lastDistance = null;
+/*
+   World dimensions.
+   The map image is 1200px wide.
+   Aircraft positions are stored
+   in THESE coordinates.
+   This is what allows aircraft
+   to stay attached to the map.
+*/
+const WORLD_WIDTH = 1200;
+const WORLD_HEIGHT = 900;
+/* =====================================================
+   APPLY WORLD TRANSFORM
+===================================================== */
 function updateMap(){
-    image.style.transform=
-        `translate(-50%,-50%)
-         translate(${offsetX}px,${offsetY}px)
-         scale(${scale})`;
+    world.style.transform =
+        `translate(
+            ${offsetX}px,
+            ${offsetY}px
+        )
+        scale(${scale})`;
     document.getElementById("zoom")
-        .textContent=
-        Math.round(scale*100)+"%";
+        .textContent =
+        Math.round(scale * 100) + "%";
 }
+/* =====================================================
+   ZOOM
+===================================================== */
 function zoomIn(){
-    scale=Math.min(5,scale*1.25);
+    scale =
+        Math.min(
+            5,
+            scale * 1.25
+        );
     updateMap();
 }
 function zoomOut(){
-    scale=Math.max(.5,scale*.8);
+    scale =
+        Math.max(
+            .5,
+            scale * .8
+        );
     updateMap();
 }
 function resetMap(){
-    scale=1;
-    offsetX=0;
-    offsetY=0;
+    scale = 1;
+    offsetX = 0;
+    offsetY = 0;
     updateMap();
 }
-/* =========================
-   PINCH + PAN
-========================= */
-map.addEventListener("pointerdown",e=>{
-    pointers.set(
-        e.pointerId,
-        {
-            x:e.clientX,
-            y:e.clientY
+/* =====================================================
+   PAN + PINCH
+===================================================== */
+map.addEventListener(
+    "pointerdown",
+    function(e){
+        pointers.set(
+            e.pointerId,
+            {
+                x:e.clientX,
+                y:e.clientY
+            }
+        );
+        map.setPointerCapture(
+            e.pointerId
+        );
+        if(
+            pointers.size === 1
+        ){
+            lastX =
+                e.clientX;
+            lastY =
+                e.clientY;
         }
-    );
-    map.setPointerCapture(e.pointerId);
-    if(pointers.size===1){
-        lastX=e.clientX;
-        lastY=e.clientY;
-    }
-    if(pointers.size===2){
-        const p=[...pointers.values()];
-        lastDistance=
-            Math.hypot(
-                p[0].x-p[1].x,
-                p[0].y-p[1].y
-            );
-    }
-});
-map.addEventListener("pointermove",e=>{
-    if(!pointers.has(e.pointerId))
-        return;
-    pointers.set(
-        e.pointerId,
-        {
-            x:e.clientX,
-            y:e.clientY
+        if(
+            pointers.size === 2
+        ){
+            const p =
+                [...pointers.values()];
+            lastDistance =
+                Math.hypot(
+                    p[0].x -
+                    p[1].x,
+                    p[0].y -
+                    p[1].y
+                );
         }
-    );
-    if(pointers.size===1){
-        offsetX+=e.clientX-lastX;
-        offsetY+=e.clientY-lastY;
-        lastX=e.clientX;
-        lastY=e.clientY;
-        updateMap();
     }
-    if(pointers.size===2){
-        const p=[...pointers.values()];
-        const newDistance=
-            Math.hypot(
-                p[0].x-p[1].x,
-                p[0].y-p[1].y
-            );
-        if(lastDistance){
-            scale*=newDistance/lastDistance;
-            scale=Math.max(
-                .5,
-                Math.min(5,scale)
-            );
+);
+map.addEventListener(
+    "pointermove",
+    function(e){
+        if(
+            !pointers.has(
+                e.pointerId
+            )
+        )
+            return;
+        pointers.set(
+            e.pointerId,
+            {
+                x:e.clientX,
+                y:e.clientY
+            }
+        );
+        /*
+           ONE FINGER:
+           Move the entire world.
+        */
+        if(
+            pointers.size === 1
+        ){
+            offsetX +=
+                e.clientX -
+                lastX;
+            offsetY +=
+                e.clientY -
+                lastY;
+            lastX =
+                e.clientX;
+            lastY =
+                e.clientY;
             updateMap();
         }
-        lastDistance=newDistance;
+        /*
+           TWO FINGERS:
+           Pinch zoom.
+        */
+        if(
+            pointers.size === 2
+        ){
+            const p =
+                [...pointers.values()];
+            const newDistance =
+                Math.hypot(
+                    p[0].x -
+                    p[1].x,
+                    p[0].y -
+                    p[1].y
+                );
+            if(lastDistance){
+                scale *=
+                    newDistance /
+                    lastDistance;
+                scale =
+                    Math.max(
+                        .5,
+                        Math.min(
+                            5,
+                            scale
+                        )
+                    );
+                updateMap();
+            }
+            lastDistance =
+                newDistance;
+        }
     }
-});
-map.addEventListener("pointerup",e=>{
-    pointers.delete(e.pointerId);
-    if(pointers.size<2)
-        lastDistance=null;
-});
-map.addEventListener("pointercancel",e=>{
-    pointers.delete(e.pointerId);
-});
-/* =========================
+);
+map.addEventListener(
+    "pointerup",
+    function(e){
+        pointers.delete(
+            e.pointerId
+        );
+        if(
+            pointers.size < 2
+        ){
+            lastDistance =
+                null;
+        }
+    }
+);
+map.addEventListener(
+    "pointercancel",
+    function(e){
+        pointers.delete(
+            e.pointerId
+        );
+    }
+);
+/* =====================================================
    NAVIGATION
-========================= */
+===================================================== */
 function activate(button){
     document
-        .querySelectorAll(".nav button")
-        .forEach(b=>
-            b.classList.remove("active")
+        .querySelectorAll(
+            ".nav button"
+        )
+        .forEach(
+            b =>
+            b.classList.remove(
+                "active"
+            )
         );
-    button.classList.add("active");
+    button.classList.add(
+        "active"
+    );
 }
 function showEnroute(button){
     activate(button);
-    document.getElementById("map")
-        .style.display="block";
-    document.getElementById("charts")
-        .style.display="none";
+    document.getElementById(
+        "map"
+    ).style.display =
+        "block";
+    document.getElementById(
+        "charts"
+    ).style.display =
+        "none";
 }
 function showCharts(button){
     activate(button);
-    document.getElementById("map")
-        .style.display="none";
-    document.getElementById("charts")
-        .style.display="block";
+    document.getElementById(
+        "map"
+    ).style.display =
+        "none";
+    document.getElementById(
+        "charts"
+    ).style.display =
+        "block";
 }
-/* =========================
-   REAL AIRCRAFT SVG LIBRARY
-========================= */
-const SVG_BASE=
+/* =====================================================
+   AIRCRAFT LIBRARY
+===================================================== */
+const SVG_BASE =
 "https://raw.githubusercontent.com/RexKramer1/AircraftShapesSVG/main/Shapes%20SVG/";
+const aircraftIcons = {
+    "A380":
+        "A388.svg",
+    "A320":
+        "A320.svg",
+    "A330":
+        "A333.svg",
+    "A340":
+        "A343.svg",
+    "A350":
+        "A359.svg",
+    "737":
+        "B738.svg",
+    "747":
+        "B748.svg",
+    "777":
+        "B77W.svg",
+    "787":
+        "B789.svg",
+    "A220":
+        "BCS3.svg",
+    "A319":
+        "A319.svg",
+    "A321":
+        "A321.svg",
+    "757":
+        "B752.svg",
+    "767":
+        "B763.svg"
+};
+/* =====================================================
+   AIRCRAFT DATA
+===================================================== */
 /*
-   PTFS NAME
-       ↓
-   REAL SVG SILHOUETTE
-   Variant does NOT matter.
-   We just use a representative
-   silhouette of the same aircraft.
+   IMPORTANT:
+   x and y are MAP coordinates.
+   They are NOT percentages.
+   Changing the map position will
+   NOT change these coordinates.
+   This is the foundation for the
+   future live PTFS tracker.
 */
-const aircraftIcons={
-    "A380":"A388.svg",
-    "A320":"A320.svg",
-    "A330":"A333.svg",
-    "A340":"A343.svg",
-    "A350":"A359.svg",
-    "737":"B738.svg",
-    "747":"B748.svg",
-    "777":"B77W.svg",
-    "787":"B789.svg",
-    "A220":"BCS3.svg",
-    "A319":"A319.svg",
-    "A321":"A321.svg",
-    "757":"B752.svg",
-    "767":"B763.svg"
+const aircraftData = {
+    x: 760,
+    y: 390,
+    type:
+        "A380",
+    heading:
+        274,
+    callsign:
+        "UAE123",
+    username:
+        "PilotExample",
+    airline:
+        "Emirates",
+    altitude:
+        "FL350",
+    speed:
+        "472 kt",
+    route:
+        "IRFD → IPPH",
+    photo:
+        ""
 };
-/* =========================
-   TEST AIRCRAFT
-========================= */
-const aircraftData={
-    type:"A380",
-    heading:274,
-    callsign:"UAE123",
-    airline:"Emirates"
-};
-/* =========================
-   LOAD REAL SVG
-========================= */
+/* =====================================================
+   POSITION AIRCRAFT ON MAP
+===================================================== */
+function updateAircraftPosition(){
+    const aircraft =
+        document.getElementById(
+            "aircraft1"
+        );
+    /*
+       The aircraft is positioned
+       directly inside #world.
+       Therefore:
+       map pan
+           ↓
+       #world moves
+           ↓
+       aircraft moves
+       map zoom
+           ↓
+       #world scales
+           ↓
+       aircraft scales
+    */
+    aircraft.style.left =
+        aircraftData.x + "px";
+    aircraft.style.top =
+        aircraftData.y + "px";
+}
+/* =====================================================
+   AIRCRAFT ICON
+===================================================== */
 function getAircraftIcon(type){
-    const file=
+    const file =
         aircraftIcons[type]
-        ||"A320.svg";
-    return SVG_BASE+file;
+        ||
+        "A320.svg";
+    return SVG_BASE + file;
 }
 function updateAircraftIcon(){
-    const url=
+    const plane =
+        document.getElementById(
+            "aircraftPlane"
+        );
+    plane.src =
         getAircraftIcon(
             aircraftData.type
         );
-    const aircraftHTML=
-        `<img
-            src="${url}"
-            alt="${aircraftData.type}"
-            style="
-                transform:
-                rotate(${aircraftData.heading}deg);
-            "
-        >`;
-    document.getElementById(
-        "aircraftIcon"
-    ).innerHTML=
-        aircraftHTML;
-    document.getElementById(
-        "panelPlaneIcon"
-    ).innerHTML=
-        aircraftHTML;
+    /*
+       ONLY THE PLANE rotates.
+       Yellow marker remains upright.
+    */
+    plane.style.transform =
+        `rotate(
+            ${aircraftData.heading}deg
+        )`;
     document.getElementById(
         "panelAircraftType"
-    ).textContent=
+    ).textContent =
         aircraftData.type;
+    document.getElementById(
+        "panelHeading"
+    ).textContent =
+        aircraftData.heading + "°";
 }
-/* =========================
-   CHANGE AIRCRAFT
-========================= */
-function setAircraftType(type){
-    if(!aircraftIcons[type]){
+/* =====================================================
+   CHANGE AIRCRAFT POSITION
+===================================================== */
+function setAircraftPosition(
+    x,
+    y
+){
+    aircraftData.x =
+        Number(x);
+    aircraftData.y =
+        Number(y);
+    updateAircraftPosition();
+}
+/* =====================================================
+   CHANGE HEADING
+===================================================== */
+function setAircraftHeading(
+    heading
+){
+    aircraftData.heading =
+        Number(heading);
+    updateAircraftIcon();
+}
+/* =====================================================
+   CHANGE AIRCRAFT TYPE
+===================================================== */
+function setAircraftType(
+    type
+){
+    if(
+        !aircraftIcons[type]
+    ){
         console.log(
-            "No icon for:",
+            "Unknown aircraft:",
             type
         );
         return;
     }
-    aircraftData.type=type;
+    aircraftData.type =
+        type;
     updateAircraftIcon();
 }
-/* =========================
-   PANEL
-========================= */
+/* =====================================================
+   AIRCRAFT PANEL
+===================================================== */
 function showAircraft(){
-    document.getElementById(
-        "aircraftPanel"
-    ).style.display="block";
+    const panel =
+        document.getElementById(
+            "aircraftPanel"
+        );
+    panel.style.display =
+        "block";
+    document.querySelector(
+        ".callsign"
+    ).textContent =
+        aircraftData.callsign;
+    document.querySelector(
+        ".username"
+    ).textContent =
+        "Roblox: " +
+        aircraftData.username;
+    document.querySelector(
+        ".airline"
+    ).textContent =
+        aircraftData.airline;
+    document.querySelector(
+        ".stats .stat:nth-child(1) strong"
+    ).textContent =
+        aircraftData.altitude;
+    document.querySelector(
+        ".stats .stat:nth-child(2) strong"
+    ).textContent =
+        aircraftData.speed;
+    document.querySelector(
+        ".route strong"
+    ).textContent =
+        aircraftData.route;
     updateAircraftIcon();
 }
 function closeAircraft(){
     document.getElementById(
         "aircraftPanel"
-    ).style.display="none";
+    ).style.display =
+        "none";
 }
+/* =====================================================
+   SEARCH
+===================================================== */
 function searchAircraft(){
     alert(
         "Live PTFS aircraft search will be connected next."
     );
 }
-/* =========================
+/* =====================================================
    START
-========================= */
-updateMap();
+===================================================== */
+updateAircraftPosition();
 updateAircraftIcon();
+updateMap();
 </script>
 </body>
 </html>
