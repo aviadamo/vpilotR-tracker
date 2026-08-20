@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0,
-maximum-scale=1.0, user-scalable=no">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
-<title>PTFS Tracker</title>
+<title>vPilot Reimagined</title>
 
 <style>
 
@@ -16,322 +20,727 @@ maximum-scale=1.0, user-scalable=no">
 }
 
 html, body {
+
     margin: 0;
+
     width: 100%;
     height: 100%;
+
     overflow: hidden;
-    background: #111923;
-    font-family: Arial, sans-serif;
+
+    background: #0b1118;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
 }
 
 
-/* TOP BAR */
+/* =========================
+   TOP BAR
+========================= */
 
 #topbar {
+
     position: fixed;
+
     top: 0;
     left: 0;
     right: 0;
 
-    height: 60px;
+    height: 64px;
 
-    background: rgba(10,15,22,0.97);
+    background:
+        rgba(9,14,21,0.96);
+
+    backdrop-filter:
+        blur(14px);
+
+    border-bottom:
+        1px solid #263442;
 
     display: flex;
+
     align-items: center;
 
-    padding: 0 12px;
+    padding:
+        0 14px;
 
     z-index: 1000;
 
-    border-bottom: 1px solid #344454;
 }
+
 
 .logo {
+
     color: white;
-    font-weight: bold;
-    margin-right: 15px;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    margin-right: 18px;
+
 }
 
-.tabs {
+
+.logo span {
+
+    color: #4fa3ff;
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.nav {
+
     display: flex;
-    gap: 6px;
+
+    gap: 5px;
+
 }
 
-.tab {
-    background: #172330;
 
-    border: 1px solid #405264;
+.nav button {
 
-    color: #cbd5df;
+    background:
+        transparent;
 
-    padding: 8px 11px;
+    border: 1px solid
+        transparent;
+
+    color: #9baaba;
+
+    padding:
+        8px 11px;
 
     border-radius: 7px;
 
     font-size: 13px;
-}
-
-.tab.active {
-    background: #2c6594;
-    color: white;
-}
-
-
-/* MAP */
-
-#map {
-    position: fixed;
-
-    top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    overflow: hidden;
-
-    background: #111923;
-
-    touch-action: none;
-}
-
-#mapImage {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 1000px;
-
-    transform-origin: center;
-
-    user-select: none;
-
-    pointer-events: none;
-}
-
-
-/* CHARTS PANEL */
-
-#chartsPanel {
-
-    display: none;
-
-    position: fixed;
-
-    top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    z-index: 900;
-
-    background: #111923;
-
-    color: white;
-
-    overflow-y: auto;
-
-    padding: 20px;
-}
-
-#chartsPanel h2 {
-    margin-top: 0;
-}
-
-.airportGrid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fill, minmax(180px,1fr));
-
-    gap: 12px;
-
-    max-width: 900px;
-}
-
-.airport {
-
-    background: #182533;
-
-    border: 1px solid #405264;
-
-    border-radius: 10px;
-
-    padding: 16px;
-
-    color: white;
-
-    text-align: left;
 
     cursor: pointer;
 
 }
 
-.airport:hover {
-    background: #24384b;
+
+.nav button:hover {
+
+    background: #162331;
+
+    color: white;
+
 }
 
-.airportCode {
-    font-size: 18px;
-    font-weight: bold;
+
+.nav button.active {
+
+    background:
+        #1d4f7a;
+
+    border-color:
+        #347ab5;
+
+    color: white;
+
 }
 
-.airportName {
-    margin-top: 5px;
-    color: #aebbc8;
+
+/* =========================
+   RIGHT BUTTONS
+========================= */
+
+.topActions {
+
+    margin-left: auto;
+
+    display: flex;
+
+    gap: 7px;
+
+}
+
+
+.action {
+
+    background:
+        #131e29;
+
+    border:
+        1px solid #334555;
+
+    color: #dce6ef;
+
+    border-radius: 7px;
+
+    padding:
+        8px 10px;
+
     font-size: 13px;
+
 }
 
 
-/* CHART VIEW */
+/* =========================
+   MAP
+========================= */
 
-#chartViewer {
-
-    display: none;
+#map {
 
     position: fixed;
 
-    top: 60px;
+    top: 64px;
+
     left: 0;
     right: 0;
     bottom: 0;
 
-    z-index: 950;
-
-    background: #111;
-
     overflow: hidden;
 
+    background:
+        #111923;
+
     touch-action: none;
+
 }
 
-#chartImage {
+
+#mapImage {
 
     position: absolute;
 
     left: 50%;
+
     top: 50%;
 
     width: 1000px;
 
-    transform-origin: center;
+    transform-origin:
+        center center;
 
     user-select: none;
 
     pointer-events: none;
+
 }
 
-#backButton {
 
-    position: fixed;
+/* =========================
+   AIRCRAFT TEST MARKERS
+========================= */
 
-    top: 72px;
-    left: 15px;
+.aircraft {
 
-    z-index: 1000;
-
-    background: rgba(10,15,22,.95);
+    position: absolute;
 
     color: white;
 
-    border: 1px solid #405264;
+    font-size: 22px;
 
-    border-radius: 7px;
+    transform:
+        translate(-50%, -50%);
 
-    padding: 9px 13px;
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    z-index: 20;
 
 }
 
 
-/* CONTROLS */
+.aircraftLabel {
+
+    position: absolute;
+
+    left: 22px;
+
+    top: -3px;
+
+    white-space: nowrap;
+
+    background:
+        rgba(8,13,19,.9);
+
+    border:
+        1px solid #334454;
+
+    border-radius: 5px;
+
+    padding:
+        3px 6px;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================
+   AIRCRAFT INFO PANEL
+========================= */
+
+#aircraftPanel {
+
+    position: fixed;
+
+    right: 18px;
+
+    top: 82px;
+
+    width: 310px;
+
+    max-width:
+        calc(100% - 36px);
+
+    background:
+        rgba(10,16,23,.97);
+
+    border:
+        1px solid #334454;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.45);
+
+    color: white;
+
+    z-index: 900;
+
+    display: none;
+
+    overflow: hidden;
+
+}
+
+
+.panelHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+        12px 14px;
+
+    border-bottom:
+        1px solid #263442;
+
+}
+
+
+.panelHeader button {
+
+    background: transparent;
+
+    border: none;
+
+    color: #9aa8b6;
+
+    font-size: 20px;
+
+}
+
+
+.aircraftPhoto {
+
+    height: 130px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #172432,
+            #0e151d
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 60px;
+
+}
+
+
+.panelBody {
+
+    padding: 14px;
+
+}
+
+
+.callsign {
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+
+.airline {
+
+    color: #9caab8;
+
+    margin-top: 3px;
+
+}
+
+
+.aircraftType {
+
+    color: #718191;
+
+    font-size: 13px;
+
+    margin-top: 3px;
+
+}
+
+
+.stats {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 16px;
+
+}
+
+
+.stat {
+
+    background:
+        #131e29;
+
+    border:
+        1px solid #263645;
+
+    border-radius: 7px;
+
+    padding: 9px;
+
+}
+
+
+.statTitle {
+
+    color: #718191;
+
+    font-size: 10px;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.statValue {
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    margin-top: 3px;
+
+}
+
+
+.route {
+
+    margin-top: 12px;
+
+    background:
+        #131e29;
+
+    border:
+        1px solid #263645;
+
+    border-radius: 7px;
+
+    padding: 10px;
+
+}
+
+
+.routeTitle {
+
+    color: #718191;
+
+    font-size: 10px;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.routeValue {
+
+    margin-top: 4px;
+
+    font-weight: 600;
+
+}
+
+
+.flightButton {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    border-radius: 7px;
+
+    border:
+        1px solid #397eb8;
+
+    background:
+        #1d4f7a;
+
+    color: white;
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+#searchBox {
+
+    position: fixed;
+
+    top: 78px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 320px;
+
+    max-width:
+        calc(100% - 30px);
+
+    z-index: 1000;
+
+    display: none;
+
+}
+
+
+#searchBox input {
+
+    width: 100%;
+
+    background:
+        rgba(10,16,23,.97);
+
+    border:
+        1px solid #405264;
+
+    color: white;
+
+    border-radius: 8px;
+
+    padding:
+        11px 13px;
+
+    outline: none;
+
+}
+
+
+/* =========================
+   ZOOM
+========================= */
 
 .controls {
 
     position: fixed;
 
     right: 15px;
-    bottom: 20px;
 
-    z-index: 1100;
+    bottom: 18px;
+
+    z-index: 500;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 7px;
+    gap: 6px;
+
 }
+
 
 .controls button {
 
-    width: 46px;
-    height: 46px;
+    width: 44px;
 
-    background: rgba(10,15,22,.95);
+    height: 44px;
 
-    color: white;
+    background:
+        rgba(10,16,23,.94);
 
-    border: 1px solid #46596b;
+    border:
+        1px solid #3a4d5f;
 
     border-radius: 8px;
 
-    font-size: 22px;
+    color: white;
+
+    font-size: 21px;
+
 }
+
 
 #zoom {
 
     position: fixed;
 
     right: 15px;
-    bottom: 175px;
 
-    z-index: 1100;
+    bottom: 165px;
 
-    background: rgba(10,15,22,.9);
+    z-index: 500;
 
-    color: #bbb;
+    background:
+        rgba(10,16,23,.9);
 
-    padding: 6px 9px;
+    color: #9ca9b6;
 
-    border-radius: 6px;
+    padding:
+        5px 8px;
 
-    font-size: 12px;
+    border-radius: 5px;
+
+    font-size: 11px;
+
 }
 
+
+@media(max-width:700px) {
+
+    .logo {
+
+        font-size: 14px;
+
+        margin-right: 7px;
+
+    }
+
+    .nav button {
+
+        padding:
+            7px 7px;
+
+        font-size: 11px;
+
+    }
+
+    .action {
+
+        padding:
+            7px;
+
+        font-size: 11px;
+
+    }
+
+}
+
+
 </style>
+
 </head>
 
 
 <body>
 
 
-<!-- TOP BAR -->
+<!-- =========================
+     TOP BAR
+========================= -->
 
 <div id="topbar">
 
+
     <div class="logo">
-        ✈️ PTFS Tracker
+
+        ✈️ vPilot <span>Reimagined</span>
+
     </div>
 
-    <div class="tabs">
+
+    <div class="nav">
 
         <button
-        class="tab active"
-        onclick="showWorld(this)">
+        class="active"
+        onclick="setMode(this)">
+
             🌍 World
+
         </button>
 
+
         <button
-        class="tab"
-        onclick="showEnroute(this)">
+        onclick="setMode(this)">
+
             📡 Enroute
+
         </button>
 
+
         <button
-        class="tab"
-        onclick="showCharts(this)">
+        onclick="setMode(this)">
+
             🛬 Charts
+
+        </button>
+
+    </div>
+
+
+    <div class="topActions">
+
+        <button
+        class="action"
+        onclick="toggleSearch()">
+
+            🔍
+
+        </button>
+
+
+        <button
+        class="action"
+        onclick="alert('Flight Planner coming next!')">
+
+            📝
+
         </button>
 
     </div>
@@ -339,213 +748,237 @@ html, body {
 </div>
 
 
-<!-- MAIN MAP -->
+<!-- =========================
+     SEARCH
+========================= -->
+
+<div id="searchBox">
+
+    <input
+    type="text"
+    placeholder="Search callsign or airport...">
+
+</div>
+
+
+<!-- =========================
+     MAP
+========================= -->
 
 <div id="map">
 
     <img
     id="mapImage"
+
     src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
-    alt="PTFS Enroute Chart">
+
+    alt="PTFS Map">
+
+
+    <!-- TEST AIRCRAFT -->
+
+    <div
+    class="aircraft"
+    style="left:55%;top:42%;"
+    onclick="showAircraft()">
+
+        ✈️
+
+        <div class="aircraftLabel">
+
+            UAE123
+
+        </div>
+
+    </div>
+
 
 </div>
 
 
-<!-- CHARTS MENU -->
+<!-- =========================
+     AIRCRAFT PANEL
+========================= -->
 
-<div id="chartsPanel">
+<div id="aircraftPanel">
 
-    <h2>🛬 PTFS Airport Charts</h2>
 
-    <p>
-        Select an airport to view its chart.
-    </p>
+    <div class="panelHeader">
 
-    <div class="airportGrid">
+        <strong>
+            Aircraft
+        </strong>
 
-        <div class="airport"
-        onclick="openChart('IRFD')">
+        <button
+        onclick="closeAircraft()">
 
-            <div class="airportCode">
-                IRFD
+            ×
+
+        </button>
+
+    </div>
+
+
+    <div class="aircraftPhoto">
+
+        ✈️
+
+    </div>
+
+
+    <div class="panelBody">
+
+
+        <div class="callsign">
+
+            UAE123
+
+        </div>
+
+
+        <div class="airline">
+
+            Emirates
+
+        </div>
+
+
+        <div class="aircraftType">
+
+            Boeing 777-300ER
+
+        </div>
+
+
+        <div class="stats">
+
+
+            <div class="stat">
+
+                <div class="statTitle">
+                    Altitude
+                </div>
+
+                <div class="statValue">
+                    FL350
+                </div>
+
             </div>
 
-            <div class="airportName">
-                Greater Rockford
+
+            <div class="stat">
+
+                <div class="statTitle">
+                    Speed
+                </div>
+
+                <div class="statValue">
+                    472 kt
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="statTitle">
+                    Heading
+                </div>
+
+                <div class="statValue">
+                    274°
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="statTitle">
+                    Squawk
+                </div>
+
+                <div class="statValue">
+                    4201
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="route">
+
+            <div class="routeTitle">
+                Route
+            </div>
+
+            <div class="routeValue">
+
+                IRFD → IPPH
+
             </div>
 
         </div>
 
 
-        <div class="airport"
-        onclick="openChart('IPPH')">
+        <button
+        class="flightButton">
 
-            <div class="airportCode">
-                IPPH
-            </div>
+            🟣 View Flight Plan
 
-            <div class="airportName">
-                Perth
-            </div>
+        </button>
 
-        </div>
-
-
-        <div class="airport"
-        onclick="openChart('WSSS')">
-
-            <div class="airportCode">
-                WSSS
-            </div>
-
-            <div class="airportName">
-                Singapore
-            </div>
-
-        </div>
-
-
-        <div class="airport"
-        onclick="openChart('LCLK')">
-
-            <div class="airportCode">
-                LCLK
-            </div>
-
-            <div class="airportName">
-                Cyprus
-            </div>
-
-        </div>
-
-
-        <div class="airport"
-        onclick="openChart('IGAR')">
-
-            <div class="airportCode">
-                IGAR
-            </div>
-
-            <div class="airportName">
-                Orenji
-            </div>
-
-        </div>
-
-
-        <div class="airport"
-        onclick="openChart('GIGI')">
-
-            <div class="airportCode">
-                GIGI
-            </div>
-
-            <div class="airportName">
-                Grindavik
-            </div>
-
-        </div>
 
     </div>
 
 </div>
 
 
-<!-- CHART VIEWER -->
-
-<div id="chartViewer">
-
-    <button
-    id="backButton"
-    onclick="closeChart()">
-
-        ← Back to charts
-
-    </button>
-
-    <img
-    id="chartImage"
-    src=""
-    alt="Airport Chart">
-
-</div>
-
-
-<!-- ZOOM -->
+<!-- =========================
+     ZOOM
+========================= -->
 
 <div id="zoom">
+
     100%
+
 </div>
 
-
-<!-- CONTROLS -->
 
 <div class="controls">
 
-    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomIn()">
+        +
+    </button>
 
-    <button onclick="zoomOut()">−</button>
+    <button onclick="zoomOut()">
+        −
+    </button>
 
-    <button onclick="resetMap()">⟳</button>
+    <button onclick="resetMap()">
+        ⟳
+    </button>
 
 </div>
 
 
 <script>
 
+
 /* =========================
-   ELEMENTS
+   VARIABLES
 ========================= */
 
 const map =
 document.getElementById("map");
 
-const mapImage =
+const image =
 document.getElementById("mapImage");
-
-const chartsPanel =
-document.getElementById("chartsPanel");
-
-const chartViewer =
-document.getElementById("chartViewer");
-
-const chartImage =
-document.getElementById("chartImage");
 
 const zoomText =
 document.getElementById("zoom");
-
-
-/* =========================
-   CHART SOURCES
-========================= */
-
-const charts = {
-
-    IRFD:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/IRFD/IRFD%20Ground.svg",
-
-    IPPH:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/IPPH/IPPH%20Ground.svg",
-
-    WSSS:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/WSSS/WSSS%20Ground.svg",
-
-    LCLK:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/LCLK/LCLK%20Ground.svg",
-
-    IGAR:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/IGAR/IGAR%20Ground.svg",
-
-    GIGI:
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airport%20Charts/GIGI/GIGI%20Ground.svg"
-
-};
-
-
-/* =========================
-   VARIABLES
-========================= */
 
 let scale = 1;
 
@@ -563,15 +996,15 @@ let lastDistance = null;
 
 
 /* =========================
-   TABS
+   NAVIGATION
 ========================= */
 
-function setActive(button) {
+function setMode(button) {
 
     document
-    .querySelectorAll(".tab")
-    .forEach(tab =>
-        tab.classList.remove("active")
+    .querySelectorAll(".nav button")
+    .forEach(btn =>
+        btn.classList.remove("active")
     );
 
     button.classList.add("active");
@@ -579,216 +1012,92 @@ function setActive(button) {
 }
 
 
-function showWorld(button) {
-
-    setActive(button);
-
-    chartsPanel.style.display =
-        "none";
-
-    chartViewer.style.display =
-        "none";
-
-    map.style.display =
-        "block";
-
-    mapImage.src =
-        "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg";
-
-    resetMap();
-
-}
-
-
-function showEnroute(button) {
-
-    setActive(button);
-
-    chartsPanel.style.display =
-        "none";
-
-    chartViewer.style.display =
-        "none";
-
-    map.style.display =
-        "block";
-
-    mapImage.src =
-        "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg";
-
-    resetMap();
-
-}
-
-
-function showCharts(button) {
-
-    setActive(button);
-
-    map.style.display =
-        "none";
-
-    chartViewer.style.display =
-        "none";
-
-    chartsPanel.style.display =
-        "block";
-
-}
-
-
 /* =========================
-   OPEN CHART
+   SEARCH
 ========================= */
 
-function openChart(code) {
+function toggleSearch() {
 
-    const source =
-        charts[code];
-
-    if(!source) {
-
-        alert(
-            "Chart not available yet."
+    const box =
+        document.getElementById(
+            "searchBox"
         );
 
-        return;
-
-    }
-
-
-    chartImage.src =
-        source;
-
-
-    chartsPanel.style.display =
-        "none";
-
-    chartViewer.style.display =
-        "block";
-
-
-    scale = 1;
-
-    x = 0;
-
-    y = 0;
-
-    updateChart();
+    box.style.display =
+        box.style.display === "block"
+        ? "none"
+        : "block";
 
 }
 
 
 /* =========================
-   CLOSE CHART
+   AIRCRAFT PANEL
 ========================= */
 
-function closeChart() {
+function showAircraft() {
 
-    chartViewer.style.display =
-        "none";
+    document
+    .getElementById(
+        "aircraftPanel"
+    )
+    .style.display = "block";
 
-    chartsPanel.style.display =
-        "block";
+}
+
+
+function closeAircraft() {
+
+    document
+    .getElementById(
+        "aircraftPanel"
+    )
+    .style.display = "none";
 
 }
 
 
 /* =========================
-   MAP UPDATE
+   MAP
 ========================= */
 
 function updateMap() {
 
-    mapImage.style.transform =
+    image.style.transform =
 
         `translate(-50%,-50%)
          translate(${x}px,${y}px)
          scale(${scale})`;
 
     zoomText.textContent =
-        Math.round(scale*100) + "%";
+
+        Math.round(scale*100)
+        + "%";
 
 }
 
-
-/* =========================
-   CHART UPDATE
-========================= */
-
-function updateChart() {
-
-    chartImage.style.transform =
-
-        `translate(-50%,-50%)
-         translate(${x}px,${y}px)
-         scale(${scale})`;
-
-    zoomText.textContent =
-        Math.round(scale*100) + "%";
-
-}
-
-
-/* =========================
-   ZOOM
-========================= */
 
 function zoomAt(
     newScale,
-    centerX,
-    centerY
+    cx,
+    cy
 ) {
 
-    newScale =
+    scale =
         Math.max(
             .5,
-            Math.min(
-                5,
-                newScale
-            )
+            Math.min(5,newScale)
         );
 
-
-    const factor =
-        newScale / scale;
-
-
-    x =
-        x * factor;
-
-
-    y =
-        y * factor;
-
-
-    scale =
-        newScale;
-
-
-    if(chartViewer.style.display === "block") {
-
-        updateChart();
-
-    } else {
-
-        updateMap();
-
-    }
+    updateMap();
 
 }
 
-
-/* =========================
-   BUTTON ZOOM
-========================= */
 
 function zoomIn() {
 
     zoomAt(
-        scale*1.3,
-        window.innerWidth/2,
-        window.innerHeight/2
+        scale*1.3
     );
 
 }
@@ -797,9 +1106,7 @@ function zoomIn() {
 function zoomOut() {
 
     zoomAt(
-        scale*.77,
-        window.innerWidth/2,
-        window.innerHeight/2
+        scale*.77
     );
 
 }
@@ -819,196 +1126,142 @@ function resetMap() {
 
 
 /* =========================
-   TOUCH PAN
+   TOUCH / MOUSE
 ========================= */
 
-function activeSurface() {
+map.addEventListener(
+"pointerdown",
+event => {
+
+    pointers.set(
+        event.pointerId,
+        {
+            x:event.clientX,
+            y:event.clientY
+        }
+    );
+
+    map.setPointerCapture(
+        event.pointerId
+    );
+
+
+    if(pointers.size === 1) {
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
+
+    }
+
+
+    if(pointers.size === 2) {
+
+        const p =
+            [...pointers.values()];
+
+        lastDistance =
+            distance(
+                p[0],
+                p[1]
+            );
+
+    }
+
+});
+
+
+map.addEventListener(
+"pointermove",
+event => {
 
     if(
-        chartViewer.style.display === "block"
+        !pointers.has(
+            event.pointerId
+        )
     )
-
-        return chartViewer;
-
-    return map;
-
-}
+        return;
 
 
-function addPointerEvents(surface) {
-
-    surface.addEventListener(
-        "pointerdown",
-        event => {
-
-            pointers.set(
-                event.pointerId,
-                {
-                    x:event.clientX,
-                    y:event.clientY
-                }
-            );
-
-            surface.setPointerCapture(
-                event.pointerId
-            );
-
-
-            if(pointers.size === 1) {
-
-                lastX =
-                    event.clientX;
-
-                lastY =
-                    event.clientY;
-
-            }
-
-
-            if(pointers.size === 2) {
-
-                const p =
-                    [...pointers.values()];
-
-                lastDistance =
-                    distance(
-                        p[0],
-                        p[1]
-                    );
-
-            }
-
+    pointers.set(
+        event.pointerId,
+        {
+            x:event.clientX,
+            y:event.clientY
         }
     );
 
 
-    surface.addEventListener(
-        "pointermove",
-        event => {
+    if(pointers.size === 1) {
 
-            if(
-                !pointers.has(
-                    event.pointerId
-                )
-            )
-                return;
+        x +=
+            event.clientX-lastX;
+
+        y +=
+            event.clientY-lastY;
+
+        lastX =
+            event.clientX;
+
+        lastY =
+            event.clientY;
+
+        updateMap();
+
+    }
 
 
-            pointers.set(
-                event.pointerId,
-                {
-                    x:event.clientX,
-                    y:event.clientY
-                }
+    if(pointers.size === 2) {
+
+        const p =
+            [...pointers.values()];
+
+        const d =
+            distance(
+                p[0],
+                p[1]
             );
 
 
-            if(pointers.size === 1) {
+        if(lastDistance) {
 
-                x +=
-                    event.clientX-lastX;
+            scale *=
+                d/lastDistance;
 
-                y +=
-                    event.clientY-lastY;
+            scale =
+                Math.max(
+                    .5,
+                    Math.min(5,scale)
+                );
 
-                lastX =
-                    event.clientX;
-
-                lastY =
-                    event.clientY;
-
-
-                if(
-                    chartViewer.style.display
-                    === "block"
-                )
-
-                    updateChart();
-
-                else
-
-                    updateMap();
-
-            }
-
-
-            if(pointers.size === 2) {
-
-                const p =
-                    [...pointers.values()];
-
-
-                const d =
-                    distance(
-                        p[0],
-                        p[1]
-                    );
-
-
-                if(lastDistance) {
-
-                    scale *=
-                        d/lastDistance;
-
-                    scale =
-                        Math.max(
-                            .5,
-                            Math.min(
-                                5,
-                                scale
-                            )
-                        );
-
-
-                    if(
-                        chartViewer.style.display
-                        === "block"
-                    )
-
-                        updateChart();
-
-                    else
-
-                        updateMap();
-
-                }
-
-
-                lastDistance = d;
-
-            }
+            updateMap();
 
         }
+
+
+        lastDistance = d;
+
+    }
+
+});
+
+
+map.addEventListener(
+"pointerup",
+event => {
+
+    pointers.delete(
+        event.pointerId
     );
 
+    if(pointers.size < 2)
 
-    surface.addEventListener(
-        "pointerup",
-        event => {
+        lastDistance = null;
 
-            pointers.delete(
-                event.pointerId
-            );
+});
 
-            if(pointers.size < 2)
-
-                lastDistance =
-                    null;
-
-        }
-    );
-
-}
-
-
-addPointerEvents(map);
-
-addPointerEvents(chartViewer);
-
-
-/* =========================
-   DISTANCE
-========================= */
 
 function distance(a,b) {
 
@@ -1024,7 +1277,12 @@ function distance(a,b) {
 
 }
 
+
+updateMap();
+
 </script>
 
+
 </body>
+
 </html>
