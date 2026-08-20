@@ -4,872 +4,458 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>vPilot Reimagined</title>
-
 <style>
 *{box-sizing:border-box}
-
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#081018;
-    color:white;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081018;color:#fff;font-family:Arial,Helvetica,sans-serif}
 button,select,input{font:inherit}
-
-button{
-    border:1px solid #40515c;
-    background:#13232d;
-    color:white;
-    border-radius:7px;
-    padding:8px 12px;
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
-}
-
+button{border:1px solid #40515c;background:#13232d;color:#fff;border-radius:7px;padding:8px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:hover{background:#1c3643}
 .primary{background:#126b9c}
-
-/* TOP */
-
-#topbar{
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    height:58px;
-    z-index:1000;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:0 12px;
-    background:#071018;
-    border-bottom:1px solid #334650;
-}
-
-#logo{
-    font-weight:bold;
-    white-space:nowrap;
-    margin-right:8px;
-}
-
+#topbar{position:fixed;top:0;left:0;right:0;height:58px;z-index:1000;display:flex;align-items:center;gap:8px;padding:0 12px;background:#071018;border-bottom:1px solid #334650}
+#logo{font-weight:bold;white-space:nowrap;margin-right:8px}
 #logo span{color:#ffb000}
-
-#status{
-    margin-left:auto;
-    color:#92a4ad;
-    font-size:11px;
-}
-
-/* MAP */
-
-#map{
-    position:absolute;
-    top:58px;
-    left:0;
-    right:0;
-    bottom:0;
-    overflow:hidden;
-    background:#121b22;
-    cursor:grab;
-    touch-action:none;
-}
-
+#status{margin-left:auto;color:#92a4ad;font-size:11px}
+#map{position:absolute;top:58px;left:0;right:0;bottom:0;overflow:hidden;background:#121b22;cursor:grab;touch-action:none}
 #map.dragging{cursor:grabbing}
-
-#world{
-    position:absolute;
-    width:2400px;
-    height:1600px;
-    left:50%;
-    top:50%;
-    transform-origin:center center;
-}
-
-#svgContainer{
-    position:absolute;
-    inset:0;
-    width:2400px;
-    height:1600px;
-    z-index:1;
-}
-
-#svgContainer svg{
-    width:2400px;
-    height:1600px;
-    display:block;
-}
-
-/* route */
-
-#routeLayer{
-    position:absolute;
-    inset:0;
-    width:2400px;
-    height:1600px;
-    pointer-events:none;
-    z-index:100;
-}
-
-#routeShadow{
-    fill:none;
-    stroke:rgba(0,0,0,.9);
-    stroke-width:17;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-}
-
-#routeLine{
-    fill:none;
-    stroke:#b85cff;
-    stroke-width:7;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-}
-
-.routePoint{
-    fill:#b85cff;
-    stroke:white;
-    stroke-width:3;
-}
-
-/* waypoint clickable overlay */
-
-#waypointLayer{
-    position:absolute;
-    left:0;
-    top:0;
-    width:2400px;
-    height:1600px;
-    z-index:200;
-    pointer-events:none;
-}
-
-.waypointHotspot{
-    position:absolute;
-    width:38px;
-    height:38px;
-    transform:translate(-50%,-50%);
-    border-radius:50%;
-    border:2px solid transparent;
-    background:transparent;
-    padding:0;
-    pointer-events:auto;
-    cursor:pointer;
-    touch-action:manipulation;
-}
-
-.waypointHotspot:hover{
-    background:rgba(255,255,255,.15);
-    border-color:rgba(255,255,255,.5);
-}
-
-.waypointHotspot.selected{
-    background:rgba(184,92,255,.22);
-    border-color:#b85cff;
-    box-shadow:0 0 14px #b85cff;
-}
-
-.waypointLabel{
-    position:absolute;
-    left:50%;
-    top:22px;
-    transform:translateX(-50%);
-    color:white;
-    font-size:9px;
-    font-weight:bold;
-    white-space:nowrap;
-    text-shadow:
-        0 0 2px #000,
-        0 0 5px #000;
-}
-
-/* selected numbers */
-
-#clickLayer{
-    position:absolute;
-    inset:0;
-    z-index:250;
-    pointer-events:none;
-}
-
-.clickedWaypoint{
-    position:absolute;
-    transform:translate(-50%,-50%);
-    text-align:center;
-    color:white;
-    font-size:9px;
-    font-weight:bold;
-    text-shadow:0 0 4px black;
-}
-
-.clickedWaypoint .dot{
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    background:#b85cff;
-    border:2px solid white;
-    margin:auto;
-}
-
-/* controls */
-
-#mapControls{
-    position:fixed;
-    right:12px;
-    bottom:12px;
-    z-index:500;
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-}
-
-#mapControls button{
-    width:42px;
-    height:42px;
-    padding:0;
-    font-size:20px;
-}
-
-#zoomLabel{
-    position:fixed;
-    right:12px;
-    bottom:150px;
-    z-index:500;
-    padding:5px 8px;
-    border-radius:5px;
-    background:#071018dd;
-    color:#aebbc1;
-    font-size:10px;
-}
-
-/* mobile route bar */
-
-#routeBar{
-    position:fixed;
-    left:8px;
-    right:8px;
-    bottom:8px;
-    z-index:800;
-    display:none;
-    align-items:center;
-    gap:5px;
-    padding:7px;
-    background:#071018f5;
-    border:1px solid #40515c;
-    border-radius:10px;
-    box-shadow:0 10px 35px #000;
-}
-
+#world{position:absolute;width:1634px;height:1222px;left:50%;top:50%;transform-origin:center center}
+#chart{position:absolute;inset:0;width:1634px;height:1222px;display:block;user-select:none;pointer-events:none}
+#routeLayer{position:absolute;inset:0;width:1634px;height:1222px;pointer-events:none;z-index:20}
+#routeShadow{fill:none;stroke:rgba(0,0,0,.9);stroke-width:18;stroke-linecap:round;stroke-linejoin:round}
+#routeLine{fill:none;stroke:#b85cff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.routePoint{fill:#b85cff;stroke:#fff;stroke-width:3}
+#waypointLayer{position:absolute;inset:0;width:1634px;height:1222px;z-index:30;pointer-events:none}
+.waypointHotspot{position:absolute;width:34px;height:34px;transform:translate(-50%,-50%);padding:0;border:0;background:transparent;pointer-events:auto;touch-action:manipulation}
+.waypointHotspot::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.75);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.waypointHotspot:hover::before,.waypointHotspot.selected::before{background:#b85cff;border-color:#fff;box-shadow:0 0 12px #b85cff}
+.waypointLabel{position:absolute;left:50%;top:27px;transform:translateX(-50%);font-size:9px;font-weight:bold;white-space:nowrap;color:#fff;text-shadow:0 0 3px #000,0 0 6px #000;opacity:0}
+.waypointHotspot:hover .waypointLabel,.waypointHotspot.selected .waypointLabel{opacity:1}
+#clickLayer{position:absolute;inset:0;z-index:40;pointer-events:none}
+.clickedWaypoint{position:absolute;transform:translate(-50%,-50%);text-align:center;color:#fff;font-size:9px;font-weight:bold;text-shadow:0 0 4px #000}
+.clickedWaypoint .dot{width:12px;height:12px;border-radius:50%;background:#b85cff;border:2px solid #fff;margin:auto}
+.clickedWaypoint .name{margin-top:2px}
+#mapControls{position:fixed;right:12px;bottom:12px;z-index:500;display:flex;flex-direction:column;gap:5px}
+#mapControls button{width:42px;height:42px;padding:0;font-size:20px}
+#zoomLabel{position:fixed;right:12px;bottom:150px;z-index:500;padding:5px 8px;border-radius:5px;background:#071018dd;color:#aebbc1;font-size:10px}
+#routeBar{position:fixed;left:8px;right:8px;bottom:8px;z-index:800;display:none;align-items:center;gap:5px;padding:7px;background:#071018f5;border:1px solid #40515c;border-radius:10px;box-shadow:0 10px 35px #000}
 #routeBar.active{display:flex}
-
-#routeBarText{
-    flex:1;
-    min-width:0;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    font-size:10px;
-    color:#c5d0d5;
-}
-
-/* panels */
-
-.panel{
-    position:fixed;
-    top:70px;
-    left:12px;
-    width:500px;
-    max-width:calc(100vw - 24px);
-    max-height:calc(100vh - 82px);
-    overflow:auto;
-    z-index:900;
-    display:none;
-    background:#071018f7;
-    border:1px solid #40515c;
-    border-radius:12px;
-    box-shadow:0 20px 70px #000;
-}
-
-.panelHeader{
-    padding:12px;
-    border-bottom:1px solid #30414a;
-    font-weight:bold;
-}
-
-.close{
-    float:right;
-    padding:0;
-    background:none;
-    border:0;
-    font-size:22px;
-}
-
+#routeBarText{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:#c5d0d5}
+.panel{position:fixed;top:70px;left:12px;width:500px;max-width:calc(100vw - 24px);max-height:calc(100vh - 82px);overflow:auto;z-index:900;display:none;background:#071018f7;border:1px solid #40515c;border-radius:12px;box-shadow:0 20px 70px #000}
+.panelHeader{padding:12px;border-bottom:1px solid #30414a;font-weight:bold}
+.close{float:right;padding:0;background:none;border:0;font-size:22px}
 .panelBody{padding:12px}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-}
-
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .field{margin-bottom:10px}
-
-.field label{
-    display:block;
-    margin-bottom:4px;
-    color:#8fa1aa;
-    font-size:9px;
-    font-weight:bold;
-    text-transform:uppercase;
-}
-
-input,select{
-    width:100%;
-    padding:9px;
-    border-radius:7px;
-    border:1px solid #40515c;
-    background:#101c24;
-    color:white;
-    outline:none;
-}
-
-.full{
-    width:100%;
-    margin-top:7px;
-}
-
-.help{
-    margin-top:10px;
-    color:#8fa1aa;
-    font-size:10px;
-    line-height:1.5;
-}
-
-#routeInfo{
-    margin-top:10px;
-    padding:10px;
-    background:#101c24;
-    border:1px solid #40515c;
-    border-radius:8px;
-    font-size:11px;
-    line-height:1.6;
-}
-
+.field label{display:block;margin-bottom:4px;color:#8fa1aa;font-size:9px;font-weight:bold;text-transform:uppercase}
+input,select{width:100%;padding:9px;border-radius:7px;border:1px solid #40515c;background:#101c24;color:#fff;outline:none}
+.full{width:100%;margin-top:7px}
+.help{margin-top:10px;color:#8fa1aa;font-size:10px;line-height:1.5}
+#routeInfo{margin-top:10px;padding:10px;background:#101c24;border:1px solid #40515c;border-radius:8px;font-size:11px;line-height:1.6}
 .purple{color:#c06cff}
-
-/* charts */
-
-#charts{
-    position:fixed;
-    right:12px;
-    top:70px;
-    width:min(900px,calc(100vw - 24px));
-    height:min(820px,calc(100vh - 82px));
-    z-index:950;
-    display:none;
-    overflow:hidden;
-    background:#071018;
-    border:1px solid #40515c;
-    border-radius:12px;
-    box-shadow:0 20px 70px #000;
-}
-
-#chartsHeader{
-    height:48px;
-    display:flex;
-    align-items:center;
-    padding:0 12px;
-    border-bottom:1px solid #30414a;
-}
-
+#charts{position:fixed;right:12px;top:70px;width:min(900px,calc(100vw - 24px));height:min(820px,calc(100vh - 82px));z-index:950;display:none;overflow:hidden;background:#071018;border:1px solid #40515c;border-radius:12px;box-shadow:0 20px 70px #000}
+#chartsHeader{height:48px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #30414a}
 #chartsHeader button{margin-left:auto}
-
-#chartsFrame{
-    width:100%;
-    height:calc(100% - 48px);
-    border:0;
-    background:white;
-}
-
-/* mobile */
-
+#chartsFrame{width:100%;height:calc(100% - 48px);border:0;background:#fff}
 @media(max-width:700px){
-
-    #topbar{
-        padding:0 6px;
-        gap:5px;
-    }
-
-    #logo{
-        font-size:11px;
-        margin-right:1px;
-    }
-
-    #topbar button{
-        font-size:10px;
-        padding:7px 8px;
-    }
-
-    #topbar button:nth-of-type(3),
-    #topbar button:nth-of-type(4){
-        display:none;
-    }
-
-    #status{display:none}
-
-    .grid{
-        grid-template-columns:1fr;
-    }
-
-    .panel{
-        top:64px;
-        left:7px;
-        right:7px;
-        width:auto;
-        max-width:none;
-        max-height:calc(100vh - 72px);
-    }
-
-    #routeBar{
-        bottom:calc(8px + env(safe-area-inset-bottom));
-    }
-
-    #mapControls{
-        bottom:calc(70px + env(safe-area-inset-bottom));
-    }
-
-    #zoomLabel{
-        bottom:calc(205px + env(safe-area-inset-bottom));
-    }
+  #topbar{padding:0 6px;gap:5px}
+  #logo{font-size:11px;margin-right:1px}
+  #topbar button{font-size:10px;padding:7px 8px}
+  #topbar button:nth-of-type(3),#topbar button:nth-of-type(4){display:none}
+  #status{display:none}
+  .grid{grid-template-columns:1fr}
+  .panel{top:64px;left:7px;right:7px;width:auto;max-width:none;max-height:calc(100vh - 72px)}
+  #routeBar{bottom:calc(8px + env(safe-area-inset-bottom))}
+  #mapControls{bottom:calc(70px + env(safe-area-inset-bottom))}
+  #zoomLabel{bottom:calc(205px + env(safe-area-inset-bottom))}
 }
 </style>
 </head>
-
 <body>
 
-<!-- TOP BAR -->
-
 <div id="topbar">
-
-    <div id="logo">
-        ✈ <span>vPilot Reimagined</span>
-    </div>
-
-    <button onclick="openPlanner()">
-        Flight Planning
-    </button>
-
-    <button onclick="openCharts()">
-        Airport Charts
-    </button>
-
-    <button onclick="undoWaypoint()">
-        Undo
-    </button>
-
-    <button onclick="clearRoute()">
-        Clear Route
-    </button>
-
-    <div id="status">
-        Loading PTFS map...
-    </div>
-
+  <div id="logo">✈ <span>vPilot Reimagined</span></div>
+  <button onclick="openPlanner()">Flight Planning</button>
+  <button onclick="openCharts()">Airport Charts</button>
+  <button onclick="undoWaypoint()">Undo</button>
+  <button onclick="clearRoute()">Clear Route</button>
+  <div id="status">Loading PTFS map...</div>
 </div>
-
-
-<!-- MAP -->
 
 <div id="map">
+  <div id="world">
+    <img id="chart"
+      src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
+      draggable="false" alt="PTFS Enroute Chart">
 
-    <div id="world">
+    <svg id="routeLayer" viewBox="0 0 1634 1222" preserveAspectRatio="none">
+      <polyline id="routeShadow" points=""></polyline>
+      <polyline id="routeLine" points=""></polyline>
+      <g id="routeDots"></g>
+    </svg>
 
-        <div id="svgContainer"></div>
-
-        <svg
-            id="routeLayer"
-            viewBox="0 0 2400 1600"
-            preserveAspectRatio="none"
-        >
-
-            <polyline
-                id="routeShadow"
-                points=""
-            ></polyline>
-
-            <polyline
-                id="routeLine"
-                points=""
-            ></polyline>
-
-            <g id="routeDots"></g>
-
-        </svg>
-
-        <div id="waypointLayer"></div>
-
-        <div id="clickLayer"></div>
-
-    </div>
-
+    <div id="waypointLayer"></div>
+    <div id="clickLayer"></div>
+  </div>
 </div>
-
-
-<!-- MAP CONTROLS -->
 
 <div id="zoomLabel">100%</div>
 
 <div id="mapControls">
-
-    <button onclick="zoomMap(1.2)">+</button>
-
-    <button onclick="zoomMap(.833333)">−</button>
-
-    <button onclick="resetMap()">⟳</button>
-
+  <button onclick="zoomMap(1.2)">+</button>
+  <button onclick="zoomMap(.833333)">−</button>
+  <button onclick="resetMap()">⟳</button>
 </div>
-
-
-<!-- MOBILE ROUTE BAR -->
 
 <div id="routeBar">
-
-    <div id="routeBarText">
-        Select waypoint
-    </div>
-
-    <button onclick="undoWaypoint()">Undo</button>
-
-    <button onclick="finishWaypointMode()">Finish</button>
-
-    <button onclick="clearRoute()">Clear</button>
-
+  <div id="routeBarText">Select a waypoint</div>
+  <button onclick="undoWaypoint()">Undo</button>
+  <button onclick="finishWaypointMode()">Finish</button>
+  <button onclick="clearRoute()">Clear</button>
 </div>
-
-
-<!-- PLANNER -->
 
 <div id="planner" class="panel">
 
-    <div class="panelHeader">
+  <div class="panelHeader">
+    Flight Planning
+    <button class="close" onclick="closePlanner()">×</button>
+  </div>
 
-        Flight Planning
+  <div class="panelBody">
 
-        <button
-            class="close"
-            onclick="closePlanner()"
-        >×</button>
+    <div class="grid">
+
+      <div class="field">
+        <label>Departure</label>
+
+        <select id="departure" onchange="refreshProcedures()">
+          <option>IRFD</option>
+          <option>IPPH</option>
+          <option>ITKO</option>
+          <option>IMLR</option>
+          <option>ILKL</option>
+          <option>IZOL</option>
+          <option>IJAF</option>
+          <option>IBAR</option>
+          <option>IHEN</option>
+          <option>ILAR</option>
+          <option>IPAP</option>
+          <option>IGAR</option>
+          <option>IBLT</option>
+          <option>IBTH</option>
+          <option>ISAU</option>
+          <option>ISKP</option>
+          <option>IGRV</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Arrival</label>
+
+        <select id="arrival" onchange="refreshProcedures()">
+          <option>IPPH</option>
+          <option>IRFD</option>
+          <option>ITKO</option>
+          <option>IMLR</option>
+          <option>ILKL</option>
+          <option>IZOL</option>
+          <option>IJAF</option>
+          <option>IBAR</option>
+          <option>IHEN</option>
+          <option>ILAR</option>
+          <option>IPAP</option>
+          <option>IGAR</option>
+          <option>IBLT</option>
+          <option>IBTH</option>
+          <option>ISAU</option>
+          <option>ISKP</option>
+          <option>IGRV</option>
+        </select>
+      </div>
 
     </div>
 
-    <div class="panelBody">
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label>Departure</label>
-
-                <select id="departure">
-
-                    <option>IRFD</option>
-                    <option>IPPH</option>
-                    <option>ITKO</option>
-                    <option>IMLR</option>
-                    <option>ILKL</option>
-                    <option>IZOL</option>
-                    <option>IJAF</option>
-                    <option>IBAR</option>
-                    <option>IHEN</option>
-                    <option>ILAR</option>
-                    <option>IPAP</option>
-                    <option>IGAR</option>
-                    <option>IBLT</option>
-                    <option>IBTH</option>
-                    <option>ISAU</option>
-                    <option>ISKP</option>
-                    <option>IGRV</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>Arrival</label>
-
-                <select id="arrival">
-
-                    <option>IPPH</option>
-                    <option>IRFD</option>
-                    <option>ITKO</option>
-                    <option>IMLR</option>
-                    <option>ILKL</option>
-                    <option>IZOL</option>
-                    <option>IJAF</option>
-                    <option>IBAR</option>
-                    <option>IHEN</option>
-                    <option>ILAR</option>
-                    <option>IPAP</option>
-                    <option>IGAR</option>
-                    <option>IBLT</option>
-                    <option>IBTH</option>
-                    <option>ISAU</option>
-                    <option>ISKP</option>
-                    <option>IGRV</option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label>Departure Runway</label>
-
-                <select id="depRunway">
-
-                    <option>18L</option>
-                    <option>18R</option>
-                    <option>25L</option>
-                    <option>25C</option>
-                    <option>25R</option>
-                    <option>36L</option>
-                    <option>36R</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>Arrival Runway</label>
-
-                <select id="arrRunway">
-
-                    <option>03</option>
-                    <option>21</option>
-                    <option>16L</option>
-                    <option>16R</option>
-                    <option>34L</option>
-                    <option>34R</option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- SID -->
-
-        <div class="field">
-
-            <label>SID</label>
-
-            <select id="sid">
-
-                <option value="">
-                    Select SID
-                </option>
-
-                <option value="NONE">
-                    NONE
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- STAR -->
-
-        <div class="field">
-
-            <label>STAR</label>
-
-            <select id="star">
-
-                <option value="">
-                    Select STAR
-                </option>
-
-                <option value="NONE">
-                    NONE
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label>Aircraft</label>
-
-                <select id="aircraft">
-
-                    <option>A220</option>
-                    <option>A318</option>
-                    <option>A319</option>
-                    <option>A320</option>
-                    <option>A321</option>
-                    <option>A330</option>
-                    <option>A340</option>
-                    <option>A350</option>
-                    <option>A380</option>
-
-                    <option>737-700</option>
-                    <option>737-800</option>
-                    <option>737 MAX</option>
-
-                    <option>747-400</option>
-                    <option>747-8</option>
-
-                    <option>757</option>
-                    <option>767</option>
-
-                    <option>777-200</option>
-                    <option>777-300</option>
-
-                    <option>787</option>
-
-                    <option>ATR 72</option>
-                    <option>Dash 8</option>
-
-                    <option>CRJ</option>
-
-                    <option>E170</option>
-                    <option>E175</option>
-                    <option>E190</option>
-                    <option>E195</option>
-
-                    <option>MD-11</option>
-                    <option>DC-10</option>
-                    <option>L-1011</option>
-
-                    <option>C-130</option>
-                    <option>KC-135</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>Cruise Level</label>
-
-                <select id="flightLevel">
-
-                    <option>FL010</option>
-                    <option>FL020</option>
-                    <option>FL030</option>
-                    <option>FL040</option>
-                    <option>FL050</option>
-                    <option>FL060</option>
-                    <option selected>FL070</option>
-                    <option>FL080</option>
-                    <option>FL090</option>
-                    <option>FL100</option>
-                    <option>FL110</option>
-                    <option>FL120</option>
-                    <option>FL130</option>
-                    <option>FL140</option>
-                    <option>FL150</option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="primary full"
-            onclick="enableWaypointMode()"
-        >
-            ✈ SELECT WAYPOINTS ON MAP
-        </button>
-
-
-        <button
-            class="full"
-            onclick="finishWaypointMode()"
-        >
-            FINISH ROUTE
-        </button>
-
-
-        <div class="help">
-
-            Press SELECT WAYPOINTS ON MAP.
-            The planner disappears and only the
-            actual PTFS waypoint triangles can be selected.
-
-        </div>
-
-
-        <div id="routeInfo">
-
-            <b>Route:</b>
-
-            <span id="routeText">
-                No waypoints selected.
-            </span>
-
-        </div>
+    <div class="grid">
+
+      <div class="field">
+        <label>Departure Runway</label>
+
+        <select id="depRunway">
+          <option>18L</option>
+          <option>18R</option>
+          <option>25L</option>
+          <option>25C</option>
+          <option>25R</option>
+          <option>36L</option>
+          <option>36R</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Arrival Runway</label>
+
+        <select id="arrRunway">
+          <option>03</option>
+          <option>06</option>
+          <option>21</option>
+          <option>16L</option>
+          <option>16R</option>
+          <option>34L</option>
+          <option>34R</option>
+        </select>
+      </div>
 
     </div>
 
+    <div class="grid">
+
+      <div class="field">
+        <label>SID</label>
+        <select id="sid">
+          <option value="">Direct / none</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>STAR</label>
+        <select id="star">
+          <option value="">Direct / none</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="field">
+        <label>Aircraft</label>
+
+        <select id="aircraft">
+          <option>A220</option>
+          <option>A318</option>
+          <option>A319</option>
+          <option>A320</option>
+          <option>A321</option>
+          <option>A330</option>
+          <option>A340</option>
+          <option>A350</option>
+          <option>A380</option>
+
+          <option>737-700</option>
+          <option>737-800</option>
+          <option>737 MAX</option>
+
+          <option>747-400</option>
+          <option>747-8</option>
+
+          <option>757</option>
+          <option>767</option>
+
+          <option>777-200</option>
+          <option>777-300</option>
+
+          <option>787</option>
+
+          <option>ATR 72</option>
+          <option>Dash 8</option>
+          <option>CRJ</option>
+
+          <option>E170</option>
+          <option>E175</option>
+          <option>E190</option>
+          <option>E195</option>
+
+          <option>MD-11</option>
+          <option>DC-10</option>
+          <option>L-1011</option>
+
+          <option>C-130</option>
+          <option>KC-135</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Cruise Level</label>
+
+        <select id="flightLevel">
+          <option>FL010</option>
+          <option>FL020</option>
+          <option>FL030</option>
+          <option>FL040</option>
+          <option>FL050</option>
+          <option>FL060</option>
+          <option selected>FL070</option>
+          <option>FL080</option>
+          <option>FL090</option>
+          <option>FL100</option>
+          <option>FL110</option>
+          <option>FL120</option>
+          <option>FL130</option>
+          <option>FL140</option>
+          <option>FL150</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button
+      class="primary full"
+      onclick="enableWaypointMode()"
+    >
+      ✈ SELECT WAYPOINTS ON MAP
+    </button>
+
+    <button
+      class="full"
+      onclick="finishWaypointMode()"
+    >
+      FINISH ROUTE
+    </button>
+
+    <div class="help">
+      Waypoint selection is restricted to the triangle fixes in the database.
+      Tapping empty map space does nothing. On phones, this planner closes automatically
+      when waypoint mode starts.
+    </div>
+
+    <div id="routeInfo">
+      <b>Route:</b>
+      <span id="routeText">No waypoints selected.</span>
+    </div>
+
+  </div>
 </div>
-
-
-<!-- CHARTS -->
 
 <div id="charts">
 
-    <div id="chartsHeader">
+  <div id="chartsHeader">
+    <b>PTFS Airport Charts</b>
+    <button onclick="closeCharts()">×</button>
+  </div>
 
-        <b>PTFS Airport Charts</b>
-
-        <button onclick="closeCharts()">×</button>
-
-    </div>
-
-    <iframe
-        id="chartsFrame"
-        src="about:blank"
-    ></iframe>
+  <iframe
+    id="chartsFrame"
+    src="about:blank"
+  ></iframe>
 
 </div>
 
-
 <script>
 
-/* =========================================================
-   CONFIG
-========================================================= */
-
-const MAP_URL =
-    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg";
+const MAP_W = 1634;
+const MAP_H = 1222;
 
 
-/* =========================================================
-   STATE
-========================================================= */
+/*
+  PTFS waypoint database.
+
+  Coordinates use the same 1634 × 1222 coordinate
+  system as the displayed PTFS enroute chart.
+*/
+
+const WAYPOINTS = {
+
+  SHELL:[546,93],
+  NIKON:[714.5,105],
+  CHILY:[912.5,127],
+  LETSE:[807.5,197],
+
+  BULLY:[412.5,202],
+  ASTRO:[669.5,254.5],
+  SQUID:[1305,256],
+  FROOT:[332.5,298],
+
+  GULEG:[590.5,312],
+  PIPER:[696,326],
+  EURAD:[493,326],
+  KNIFE:[885.5,328],
+
+  NOONU:[1210.5,349.5],
+  KELLA:[1276.5,353],
+  STRAX:[982.5,373.5],
+
+  ONDER:[780.5,382],
+  RENDR:[669.5,395],
+  BLANK:[526.5,400],
+  UDMUG:[1476.5,405],
+
+  THENR:[330.5,420],
+  SISTA:[1252,435],
+  ACRES:[191.5,446],
+  PROBE:[724.5,447],
+
+  TALIS:[1164.5,448],
+  DINER:[877.5,453.5],
+  ROSMO:[1339.5,462],
+  YOUTH:[423.5,470],
+
+  CAMEL:[1104.5,504],
+  DUNKS:[1194.5,508],
+  UWAIS:[123,509],
+  WELSH:[641.5,518.5],
+
+  ISCM:[1294.5,529.5],
+
+  INDEX:[743,578],
+  GUESS:[477.5,578],
+  GAVIN:[908.5,605.5],
+
+  OCEEN:[979,657.5],
+  DOCCO:[1291.5,676],
+  RESTS:[743,711],
+
+  SPACE:[366.5,749],
+
+  DACKD:[149.5,824],
+  JAMSI:[934,844],
+  WAREZ:[588,849],
+  GEORG:[256.5,856],
+
+  HACKE:[88,873],
+  GRASS:[1061.5,889],
+
+  LAZER:[927.5,936],
+  DEBUG:[1432.5,938],
+
+  HECKS:[123.5,951],
+  ALDER:[476.5,991],
+  INTER:[668.5,995],
+  CRACK:[587.5,995],
+
+  BOBUX:[1339.5,1013],
+  STACK:[332,1021],
+  NUBER:[1534.5,1031],
+
+  MUONE:[1324,1100],
+  REAPR:[807.5,1123],
+  ROBUX:[404.5,1176]
+
+};
+
+
+/*
+  SID / STAR database.
+
+  More procedures can be added here without
+  changing the map code.
+*/
+
+const PROCEDURES = {
+
+  IRFD:{
+    sids:[
+      "BEANS1Z"
+    ],
+    stars:[]
+  },
+
+  ILAR:{
+    sids:[],
+    stars:[
+      "ODOKU2W"
+    ]
+  }
+
+};
+
 
 let zoom = 1;
 
@@ -888,1183 +474,863 @@ let waypointMode = false;
 
 let selectedWaypoints = [];
 
-let detectedWaypoints = [];
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
 
 const map =
-    document.getElementById("map");
+  document.getElementById("map");
 
 const world =
-    document.getElementById("world");
-
-const svgContainer =
-    document.getElementById("svgContainer");
+  document.getElementById("world");
 
 const waypointLayer =
-    document.getElementById("waypointLayer");
+  document.getElementById("waypointLayer");
 
 const clickLayer =
-    document.getElementById("clickLayer");
+  document.getElementById("clickLayer");
 
 const routeLine =
-    document.getElementById("routeLine");
+  document.getElementById("routeLine");
 
 const routeShadow =
-    document.getElementById("routeShadow");
+  document.getElementById("routeShadow");
 
 const routeDots =
-    document.getElementById("routeDots");
+  document.getElementById("routeDots");
 
 const status =
-    document.getElementById("status");
+  document.getElementById("status");
 
 
-/* =========================================================
-   MAP
-========================================================= */
+/* =========================
+   MAP TRANSFORM
+========================= */
 
 function updateMap(){
 
-    world.style.transform =
-        `
-        translate(
-            calc(-50% + ${offsetX}px),
-            calc(-50% + ${offsetY}px)
-        )
-        scale(${zoom})
-        `;
+  world.style.transform =
+    `
+    translate(
+      calc(-50% + ${offsetX}px),
+      calc(-50% + ${offsetY}px)
+    )
+    scale(${zoom})
+    `;
 
-    document.getElementById(
-        "zoomLabel"
-    ).textContent =
-        Math.round(zoom * 100) + "%";
+  document.getElementById(
+    "zoomLabel"
+  ).textContent =
+    Math.round(zoom*100)+"%";
 
 }
 
 
+/* =========================
+   ZOOM
+========================= */
+
 function zoomMap(amount){
 
-    zoom *= amount;
+  zoom *= amount;
 
-    zoom =
-        Math.max(
-            .2,
-            Math.min(
-                6,
-                zoom
-            )
-        );
+  zoom =
+    Math.max(
+      .2,
+      Math.min(
+        6,
+        zoom
+      )
+    );
 
-    updateMap();
+  updateMap();
 
 }
 
 
 function resetMap(){
 
-    zoom = 1;
-    offsetX = 0;
-    offsetY = 0;
+  zoom = 1;
 
-    updateMap();
+  offsetX = 0;
+  offsetY = 0;
+
+  updateMap();
 
 }
 
 
-/* =========================================================
-   DRAG
-========================================================= */
+/* =========================
+   MAP DRAG
+========================= */
 
 map.addEventListener(
-    "pointerdown",
-    event => {
+  "pointerdown",
+  event => {
 
-        if(waypointMode)
-            return;
+    /*
+      Never drag while waypoint
+      selection is active.
+    */
 
-        if(
-            event.target.closest(
-                ".waypointHotspot"
-            )
-        )
-            return;
+    if(waypointMode)
+      return;
 
-        dragging = true;
+    /*
+      Do not interfere with
+      waypoint buttons.
+    */
 
-        dragStartX =
-            event.clientX;
+    if(
+      event.target.closest(
+        ".waypointHotspot"
+      )
+    )
+      return;
 
-        dragStartY =
-            event.clientY;
+    dragging = true;
 
-        originalX =
-            offsetX;
+    dragStartX =
+      event.clientX;
 
-        originalY =
-            offsetY;
+    dragStartY =
+      event.clientY;
 
-        map.classList.add("dragging");
+    originalX =
+      offsetX;
 
-        try{
-            map.setPointerCapture(
-                event.pointerId
-            );
-        }catch(e){}
+    originalY =
+      offsetY;
 
-    }
+    map.classList.add(
+      "dragging"
+    );
+
+    try{
+
+      map.setPointerCapture(
+        event.pointerId
+      );
+
+    }catch(_){}
+
+  }
 );
 
 
 map.addEventListener(
-    "pointermove",
-    event => {
+  "pointermove",
+  event => {
 
-        if(!dragging)
-            return;
+    if(!dragging)
+      return;
 
-        offsetX =
-            originalX +
-            event.clientX -
-            dragStartX;
+    offsetX =
+      originalX +
+      event.clientX -
+      dragStartX;
 
-        offsetY =
-            originalY +
-            event.clientY -
-            dragStartY;
+    offsetY =
+      originalY +
+      event.clientY -
+      dragStartY;
 
-        updateMap();
+    updateMap();
 
-    }
+  }
 );
 
 
 map.addEventListener(
-    "pointerup",
-    () => {
+  "pointerup",
+  () => {
 
-        dragging = false;
+    dragging = false;
 
-        map.classList.remove(
-            "dragging"
-        );
+    map.classList.remove(
+      "dragging"
+    );
 
-    }
+  }
 );
 
-
-/* =========================================================
-   WHEEL
-========================================================= */
 
 map.addEventListener(
-    "wheel",
-    event => {
+  "pointercancel",
+  () => {
 
-        event.preventDefault();
+    dragging = false;
 
-        zoomMap(
-            event.deltaY < 0
-                ? 1.12
-                : .89
-        );
+    map.classList.remove(
+      "dragging"
+    );
 
-    },
-    {
-        passive:false
-    }
+  }
 );
 
 
-/* =========================================================
+/* =========================
+   MAP WHEEL
+========================= */
+
+map.addEventListener(
+  "wheel",
+  event => {
+
+    event.preventDefault();
+
+    zoomMap(
+      event.deltaY < 0
+        ? 1.12
+        : .89
+    );
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+/* =========================
    WAYPOINT MODE
-========================================================= */
+========================= */
 
 function enableWaypointMode(){
 
-    waypointMode = true;
+  waypointMode = true;
 
-    /*
-        Hide planner immediately.
-    */
+  /*
+    Important mobile behavior:
+    hide the large planner.
+  */
 
-    document.getElementById(
-        "planner"
-    ).style.display =
-        "none";
+  document.getElementById(
+    "planner"
+  ).style.display =
+    "none";
 
+  document.getElementById(
+    "charts"
+  ).style.display =
+    "none";
 
-    document.getElementById(
-        "charts"
-    ).style.display =
-        "none";
+  document.getElementById(
+    "routeBar"
+  ).classList.add(
+    "active"
+  );
 
+  map.style.cursor =
+    "crosshair";
 
-    document.getElementById(
-        "routeBar"
-    ).classList.add(
-        "active"
-    );
+  status.textContent =
+    "WAYPOINT MODE — TAP A TRIANGLE";
 
-
-    map.style.cursor =
-        "crosshair";
-
-
-    status.textContent =
-        "WAYPOINT MODE — TAP A TRIANGLE FIX";
-
-
-    buildWaypointHotspots();
+  buildWaypointHotspots();
 
 }
 
 
 function finishWaypointMode(){
 
-    waypointMode = false;
+  waypointMode = false;
 
-    document.getElementById(
-        "routeBar"
-    ).classList.remove(
-        "active"
-    );
+  document.getElementById(
+    "routeBar"
+  ).classList.remove(
+    "active"
+  );
 
+  map.style.cursor =
+    "grab";
 
-    map.style.cursor =
-        "grab";
+  status.textContent =
+    "PTFS MAP READY";
 
-
-    status.textContent =
-        "PTFS MAP READY";
-
-
-    clearHotspots();
+  waypointLayer.innerHTML =
+    "";
 
 }
 
 
-/* =========================================================
-   INLINE SVG LOADING
-========================================================= */
-
-async function loadMap(){
-
-    try{
-
-        status.textContent =
-            "Loading PTFS enroute chart...";
-
-
-        const response =
-            await fetch(
-                MAP_URL,
-                {
-                    cache:"no-store"
-                }
-            );
-
-
-        if(!response.ok)
-            throw new Error(
-                "HTTP " +
-                response.status
-            );
-
-
-        const text =
-            await response.text();
-
-
-        /*
-            Parse the SVG.
-        */
-
-        const parser =
-            new DOMParser();
-
-
-        const documentSVG =
-            parser.parseFromString(
-                text,
-                "image/svg+xml"
-            );
-
-
-        const svg =
-            documentSVG.documentElement;
-
-
-        if(
-            !svg ||
-            svg.nodeName.toLowerCase() !== "svg"
-        ){
-
-            throw new Error(
-                "Invalid SVG"
-            );
-
-        }
-
-
-        /*
-            Put the REAL SVG into the page.
-
-            This allows JavaScript to inspect
-            its actual shapes.
-        */
-
-        svg.removeAttribute("width");
-        svg.removeAttribute("height");
-
-        svg.setAttribute(
-            "viewBox",
-            svg.getAttribute("viewBox") ||
-            "0 0 2400 1600"
-        );
-
-        svg.setAttribute(
-            "preserveAspectRatio",
-            "none"
-        );
-
-
-        svgContainer.innerHTML =
-            "";
-
-        svgContainer.appendChild(
-            document.importNode(
-                svg,
-                true
-            )
-        );
-
-
-        /*
-            Find triangle waypoint symbols.
-        */
-
-        detectWaypointTriangles();
-
-
-        status.textContent =
-            "PTFS MAP READY — " +
-            detectedWaypoints.length +
-            " FIXES FOUND";
-
-
-    }catch(error){
-
-        console.error(error);
-
-        status.textContent =
-            "MAP FAILED TO LOAD";
-
-    }
-
-}
-
-
-/* =========================================================
-   TRIANGLE DETECTION
-========================================================= */
-
-function detectWaypointTriangles(){
-
-    detectedWaypoints = [];
-
-
-    const svg =
-        svgContainer.querySelector(
-            "svg"
-        );
-
-
-    if(!svg)
-        return;
-
-
-    /*
-        Search polygon/path elements.
-
-        PTFS waypoint symbols are small triangles.
-    */
-
-    const shapes =
-        svg.querySelectorAll(
-            "polygon,path"
-        );
-
-
-    const texts =
-        Array.from(
-            svg.querySelectorAll(
-                "text,tspan"
-            )
-        );
-
-
-    shapes.forEach(
-        shape => {
-
-            const box =
-                safeBBox(shape);
-
-
-            if(!box)
-                return;
-
-
-            /*
-                Waypoint triangles are small.
-
-                Reject huge airport/map shapes.
-            */
-
-            if(
-                box.width < 2 ||
-                box.height < 2
-            )
-                return;
-
-
-            if(
-                box.width > 40 ||
-                box.height > 40
-            )
-                return;
-
-
-            /*
-                Triangle-like aspect.
-            */
-
-            const points =
-                shape.getAttribute(
-                    "points"
-                );
-
-
-            let isTriangle =
-                false;
-
-
-            if(points){
-
-                const coords =
-                    points
-                        .trim()
-                        .split(/\s+/)
-                        .map(
-                            p =>
-                                p.split(",")
-                        );
-
-
-                if(
-                    coords.length === 3
-                )
-                    isTriangle = true;
-
-            }
-
-
-            /*
-                For paths, inspect command structure.
-            */
-
-            if(
-                !isTriangle &&
-                shape.tagName.toLowerCase() ===
-                "path"
-            ){
-
-                const d =
-                    shape.getAttribute("d") ||
-                    "";
-
-
-                /*
-                    Small closed path with
-                    roughly three line segments.
-                */
-
-                const lineCount =
-                    (
-                        d.match(
-                            /[lL]/g
-                        ) || []
-                    ).length;
-
-
-                if(
-                    /[zZ]/.test(d) &&
-                    lineCount >= 2 &&
-                    lineCount <= 4
-                ){
-
-                    isTriangle = true;
-
-                }
-
-            }
-
-
-            if(!isTriangle)
-                return;
-
-
-            const cx =
-                box.x +
-                box.width / 2;
-
-            const cy =
-                box.y +
-                box.height / 2;
-
-
-            /*
-                Find closest text label.
-
-                INDEX, EASTM, etc. should be
-                close to the triangle.
-            */
-
-            let best = null;
-
-            let bestDistance =
-                Infinity;
-
-
-            texts.forEach(
-                text => {
-
-                    const name =
-                        (
-                            text.textContent ||
-                            ""
-                        )
-                        .trim()
-                        .toUpperCase();
-
-
-                    if(
-                        !/^[A-Z0-9]{3,6}$/.test(
-                            name
-                        )
-                    )
-                        return;
-
-
-                    const textBox =
-                        safeBBox(text);
-
-
-                    if(!textBox)
-                        return;
-
-
-                    const tx =
-                        textBox.x +
-                        textBox.width / 2;
-
-                    const ty =
-                        textBox.y +
-                        textBox.height / 2;
-
-
-                    const dx =
-                        tx - cx;
-
-                    const dy =
-                        ty - cy;
-
-
-                    const distance =
-                        Math.sqrt(
-                            dx*dx +
-                            dy*dy
-                        );
-
-
-                    if(
-                        distance < bestDistance &&
-                        distance < 80
-                    ){
-
-                        bestDistance =
-                            distance;
-
-                        best = name;
-
-                    }
-
-                }
-            );
-
-
-            /*
-                If there is no nearby label,
-                don't make a random triangle
-                clickable.
-
-                This keeps the map safe from
-                unrelated triangles.
-            */
-
-            if(!best)
-                return;
-
-
-            /*
-                Remove duplicates.
-            */
-
-            const duplicate =
-                detectedWaypoints.some(
-                    point =>
-                        point.name === best &&
-                        Math.abs(
-                            point.x - cx
-                        ) < 5 &&
-                        Math.abs(
-                            point.y - cy
-                        ) < 5
-                );
-
-
-            if(duplicate)
-                return;
-
-
-            detectedWaypoints.push({
-
-                name:best,
-
-                x:cx,
-
-                y:cy
-
-            });
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   SAFE BBOX
-========================================================= */
-
-function safeBBox(element){
-
-    try{
-
-        const box =
-            element.getBBox();
-
-        if(
-            !Number.isFinite(box.x) ||
-            !Number.isFinite(box.y)
-        )
-            return null;
-
-        return box;
-
-    }catch(e){
-
-        return null;
-
-    }
-
-}
-
-
-/* =========================================================
-   HOTSPOTS
-========================================================= */
+/* =========================
+   BUILD HOTSPOTS
+========================= */
 
 function buildWaypointHotspots(){
 
-    clearHotspots();
+  waypointLayer.innerHTML =
+    "";
 
+  Object.entries(
+    WAYPOINTS
+  ).forEach(
+    ([name,[x,y]]) => {
 
-    detectedWaypoints.forEach(
-        waypoint => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-            button.className =
-                "waypointHotspot";
-
-
-            button.style.left =
-                waypoint.x + "px";
-
-            button.style.top =
-                waypoint.y + "px";
-
-
-            button.dataset.name =
-                waypoint.name;
-
-
-            button.setAttribute(
-                "aria-label",
-                waypoint.name
-            );
-
-
-            button.innerHTML =
-                `
-                <span class="waypointLabel">
-                    ${escapeHTML(
-                        waypoint.name
-                    )}
-                </span>
-                `;
-
-
-            button.addEventListener(
-                "pointerdown",
-                event => {
-
-                    event.stopPropagation();
-
-                }
-            );
-
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                    selectWaypoint(
-                        waypoint,
-                        button
-                    );
-
-                }
-            );
-
-
-            waypointLayer.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    if(
-        detectedWaypoints.length === 0
-    ){
-
-        status.textContent =
-            "WAYPOINT MODE — NO TRIANGLES DETECTED";
-
-    }
-
-}
-
-
-function clearHotspots(){
-
-    waypointLayer.innerHTML =
-        "";
-
-}
-
-
-/* =========================================================
-   SELECT
-========================================================= */
-
-function selectWaypoint(
-    waypoint,
-    button
-){
-
-    if(!waypointMode)
-        return;
-
-
-    const index =
-        selectedWaypoints.findIndex(
-            point =>
-                point.name ===
-                waypoint.name
+      const button =
+        document.createElement(
+          "button"
         );
 
+      button.type =
+        "button";
 
-    /*
-        Tapping a selected fix again
-        removes it.
-    */
+      button.className =
+        "waypointHotspot";
 
-    if(index !== -1){
+      button.style.left =
+        x+"px";
 
-        selectedWaypoints.splice(
-            index,
-            1
-        );
+      button.style.top =
+        y+"px";
 
-    }else{
+      button.dataset.name =
+        name;
 
-        selectedWaypoints.push({
+      button.setAttribute(
+        "aria-label",
+        name
+      );
 
-            name:waypoint.name,
-
-            x:waypoint.x,
-
-            y:waypoint.y
-
-        });
-
-    }
-
-
-    drawRoute();
-
-    rebuildMarkers();
-
-    updateRouteText();
-
-}
-
-
-/* =========================================================
-   MARKERS
-========================================================= */
-
-function rebuildMarkers(){
-
-    clickLayer.innerHTML =
-        "";
-
-
-    selectedWaypoints.forEach(
-        (point,index) => {
-
-            const marker =
-                document.createElement(
-                    "div"
-                );
-
-
-            marker.className =
-                "clickedWaypoint";
-
-
-            marker.style.left =
-                point.x + "px";
-
-            marker.style.top =
-                point.y + "px";
-
-
-            marker.innerHTML =
-                `
-                <div class="dot"></div>
-                ${index + 1}
-                `;
-
-
-            clickLayer.appendChild(
-                marker
-            );
-
-        }
-    );
-
-
-    document
-        .querySelectorAll(
-            ".waypointHotspot"
-        )
-        .forEach(
-            button => {
-
-                button.classList.toggle(
-                    "selected",
-                    selectedWaypoints.some(
-                        point =>
-                            point.name ===
-                            button.dataset.name
-                    )
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   ROUTE
-========================================================= */
-
-function drawRoute(){
-
-    const points =
-        selectedWaypoints
-            .map(
-                point =>
-                    `${point.x},${point.y}`
-            )
-            .join(" ");
-
-
-    routeLine.setAttribute(
-        "points",
-        points
-    );
-
-
-    routeShadow.setAttribute(
-        "points",
-        points
-    );
-
-
-    routeDots.innerHTML =
-        "";
-
-
-    selectedWaypoints.forEach(
-        point => {
-
-            const circle =
-                document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "circle"
-                );
-
-
-            circle.setAttribute(
-                "cx",
-                point.x
-            );
-
-
-            circle.setAttribute(
-                "cy",
-                point.y
-            );
-
-
-            circle.setAttribute(
-                "r",
-                "8"
-            );
-
-
-            circle.setAttribute(
-                "class",
-                "routePoint"
-            );
-
-
-            routeDots.appendChild(
-                circle
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   ROUTE TEXT
-========================================================= */
-
-function updateRouteText(){
-
-    const routeText =
-        document.getElementById(
-            "routeText"
-        );
-
-
-    if(
-        selectedWaypoints.length === 0
-    ){
-
-        routeText.textContent =
-            "No waypoints selected.";
-
-        document.getElementById(
-            "routeBarText"
-        ).textContent =
-            "Select waypoint";
-
-        return;
-
-    }
-
-
-    const route =
-        selectedWaypoints
-            .map(
-                point =>
-                    point.name
-            )
-            .join(" → ");
-
-
-    routeText.innerHTML =
+      button.innerHTML =
         `
-        <span class="purple">
-            ${escapeHTML(route)}
+        <span class="waypointLabel">
+          ${escapeHTML(name)}
         </span>
         `;
 
+      button.addEventListener(
+        "pointerdown",
+        event => {
 
-    document.getElementById(
-        "routeBarText"
-    ).textContent =
-        route;
+          event.stopPropagation();
+
+        }
+      );
+
+      button.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          selectWaypoint(
+            name,
+            x,
+            y,
+            button
+          );
+
+        }
+      );
+
+      waypointLayer.appendChild(
+        button
+      );
+
+    }
+  );
 
 }
 
 
-/* =========================================================
+/* =========================
+   SELECT WAYPOINT
+========================= */
+
+function selectWaypoint(
+  name,
+  x,
+  y,
+  button
+){
+
+  if(!waypointMode)
+    return;
+
+
+  /*
+    Clicking the same fix again
+    removes it from the route.
+  */
+
+  const existing =
+    selectedWaypoints.findIndex(
+      point =>
+        point.name === name
+    );
+
+
+  if(existing !== -1){
+
+    selectedWaypoints.splice(
+      existing,
+      1
+    );
+
+  }else{
+
+    selectedWaypoints.push({
+      name:name,
+      x:x,
+      y:y
+    });
+
+  }
+
+
+  drawRoute();
+
+  rebuildMarkers();
+
+  updateRouteText();
+
+}
+
+
+/* =========================
+   SELECTED MARKERS
+========================= */
+
+function rebuildMarkers(){
+
+  clickLayer.innerHTML =
+    "";
+
+
+  selectedWaypoints.forEach(
+    (point,index) => {
+
+      const marker =
+        document.createElement(
+          "div"
+        );
+
+      marker.className =
+        "clickedWaypoint";
+
+      marker.style.left =
+        point.x+"px";
+
+      marker.style.top =
+        point.y+"px";
+
+      marker.innerHTML =
+        `
+        <div class="dot"></div>
+        <div class="name">
+          ${index+1}. ${escapeHTML(point.name)}
+        </div>
+        `;
+
+      clickLayer.appendChild(
+        marker
+      );
+
+    }
+  );
+
+
+  document
+    .querySelectorAll(
+      ".waypointHotspot"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+          "selected",
+          selectedWaypoints.some(
+            point =>
+              point.name ===
+              button.dataset.name
+          )
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================
+   DRAW ROUTE
+========================= */
+
+function drawRoute(){
+
+  const points =
+    selectedWaypoints
+      .map(
+        point =>
+          `${point.x},${point.y}`
+      )
+      .join(" ");
+
+
+  routeLine.setAttribute(
+    "points",
+    points
+  );
+
+
+  routeShadow.setAttribute(
+    "points",
+    points
+  );
+
+
+  routeDots.innerHTML =
+    "";
+
+
+  selectedWaypoints.forEach(
+    point => {
+
+      const circle =
+        document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle"
+        );
+
+
+      circle.setAttribute(
+        "cx",
+        point.x
+      );
+
+
+      circle.setAttribute(
+        "cy",
+        point.y
+      );
+
+
+      circle.setAttribute(
+        "r",
+        "8"
+      );
+
+
+      circle.setAttribute(
+        "class",
+        "routePoint"
+      );
+
+
+      routeDots.appendChild(
+        circle
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   ROUTE TEXT
+========================= */
+
+function updateRouteText(){
+
+  const route =
+    selectedWaypoints
+      .map(
+        point =>
+          point.name
+      )
+      .join(" → ");
+
+
+  document.getElementById(
+    "routeText"
+  ).innerHTML =
+
+    route
+
+      ? `
+        <span class="purple">
+          ${escapeHTML(route)}
+        </span>
+        `
+
+      : "No waypoints selected.";
+
+
+  document.getElementById(
+    "routeBarText"
+  ).textContent =
+    route ||
+    "Select a waypoint";
+
+}
+
+
+/* =========================
    UNDO
-========================================================= */
+========================= */
 
 function undoWaypoint(){
 
-    if(
-        selectedWaypoints.length === 0
-    )
-        return;
+  if(
+    !selectedWaypoints.length
+  )
+    return;
 
 
-    selectedWaypoints.pop();
+  selectedWaypoints.pop();
 
-    drawRoute();
+  drawRoute();
 
-    rebuildMarkers();
+  rebuildMarkers();
 
-    updateRouteText();
+  updateRouteText();
 
 }
 
 
-/* =========================================================
+/* =========================
    CLEAR
-========================================================= */
+========================= */
 
 function clearRoute(){
 
-    selectedWaypoints = [];
+  selectedWaypoints = [];
 
-    drawRoute();
+  drawRoute();
 
-    rebuildMarkers();
+  rebuildMarkers();
 
-    updateRouteText();
+  updateRouteText();
 
 }
 
 
-/* =========================================================
+/* =========================
    PLANNER
-========================================================= */
+========================= */
 
 function openPlanner(){
 
-    document.getElementById(
-        "planner"
-    ).style.display =
-        "block";
+  document.getElementById(
+    "planner"
+  ).style.display =
+    "block";
+
+  refreshProcedures();
 
 }
 
 
 function closePlanner(){
 
-    document.getElementById(
-        "planner"
-    ).style.display =
-        "none";
+  document.getElementById(
+    "planner"
+  ).style.display =
+    "none";
 
 }
 
 
-/* =========================================================
+/* =========================
    CHARTS
-========================================================= */
+========================= */
 
 function openCharts(){
 
-    document.getElementById(
-        "charts"
-    ).style.display =
-        "block";
+  document.getElementById(
+    "charts"
+  ).style.display =
+    "block";
 
 
-    document.getElementById(
-        "chartsFrame"
-    ).src =
-        "https://atc24resources.github.io/24QuickCharts/";
+  document.getElementById(
+    "chartsFrame"
+  ).src =
+    "https://atc24resources.github.io/24QuickCharts/";
 
 }
 
 
 function closeCharts(){
 
-    document.getElementById(
-        "charts"
-    ).style.display =
-        "none";
+  document.getElementById(
+    "charts"
+  ).style.display =
+    "none";
 
 
-    document.getElementById(
-        "chartsFrame"
-    ).src =
-        "about:blank";
+  document.getElementById(
+    "chartsFrame"
+  ).src =
+    "about:blank";
 
 }
 
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+/* =========================
+   SID / STAR
+========================= */
+
+function refreshProcedures(){
+
+  const departure =
+    document.getElementById(
+      "departure"
+    ).value;
+
+  const arrival =
+    document.getElementById(
+      "arrival"
+    ).value;
+
+
+  fillSelect(
+    "sid",
+    PROCEDURES[
+      departure
+    ]?.sids || [],
+    "Direct / none"
+  );
+
+
+  fillSelect(
+    "star",
+    PROCEDURES[
+      arrival
+    ]?.stars || [],
+    "Direct / none"
+  );
+
+}
+
+
+function fillSelect(
+  id,
+  items,
+  emptyLabel
+){
+
+  const select =
+    document.getElementById(
+      id
+    );
+
+  select.innerHTML =
+    "";
+
+
+  const empty =
+    document.createElement(
+      "option"
+    );
+
+  empty.value =
+    "";
+
+  empty.textContent =
+    emptyLabel;
+
+  select.appendChild(
+    empty
+  );
+
+
+  items.forEach(
+    value => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        value;
+
+      option.textContent =
+        value;
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   HTML ESCAPE
+========================= */
 
 function escapeHTML(value){
 
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+  return String(value)
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
 
-/* =========================================================
-   START
-========================================================= */
+/* =========================
+   MAP LOAD
+========================= */
+
+document
+  .getElementById("chart")
+  .addEventListener(
+    "load",
+    () => {
+
+      status.textContent =
+        "PTFS MAP READY — " +
+        Object.keys(
+          WAYPOINTS
+        ).length +
+        " FIXES LOADED";
+
+    }
+  );
+
+
+document
+  .getElementById("chart")
+  .addEventListener(
+    "error",
+    () => {
+
+      status.textContent =
+        "PTFS MAP FAILED TO LOAD";
+
+    }
+  );
+
+
+/* =========================
+   INITIALIZE
+========================= */
 
 updateMap();
 
-loadMap();
+refreshProcedures();
 
 </script>
 
