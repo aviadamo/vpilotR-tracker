@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,26 +17,44 @@
         .map {
             width: 100%;
             height: 100%;
+            overflow: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: auto;
         }
 
-        img {
+        .map img {
             width: 100%;
+            min-width: 1000px;
             height: auto;
-            min-width: 900px;
+            display: block;
+        }
+
+        .title {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            background: rgba(10, 15, 22, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
 
+<div class="title">
+    ✈️ PTFS Tracker
+</div>
+
 <div class="map">
     <img
-        src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Airspace%20Map.svg"
-        alt="PTFS Airspace Map"
+        src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
+        alt="PTFS Enroute Chart"
     >
 </div>
 
