@@ -2,477 +2,273 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>vPilot Reimagined</title>
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<title>PTFS Tracker</title>
 
 <style>
-*{box-sizing:border-box}
 
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#080e15;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    color:white;
+* {
+    box-sizing: border-box;
 }
 
-/* TOP BAR */
-
-#topbar{
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    height:64px;
-    z-index:1000;
-
-    display:flex;
-    align-items:center;
-    padding:0 12px;
-
-    background:rgba(7,12,18,.97);
-    backdrop-filter:blur(15px);
-
-    border-bottom:1px solid #263645;
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #111923;
+    font-family: Arial, sans-serif;
 }
 
-.logo{
-    font-size:17px;
-    font-weight:700;
-    white-space:nowrap;
-    margin-right:15px;
+
+/* =========================
+   TOP BAR
+========================= */
+
+#topbar {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 60px;
+
+    background: rgba(10,15,22,0.97);
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 12px;
+
+    z-index: 1000;
+
+    border-bottom: 1px solid #344454;
+
 }
 
-.logo span{
-    color:#4da3ff;
+
+.logo {
+
+    color: white;
+
+    font-weight: bold;
+
+    margin-right: 15px;
+
 }
 
-.nav{
-    display:flex;
-    gap:5px;
+
+.tabs {
+
+    display: flex;
+
+    gap: 6px;
+
 }
 
-.nav button{
-    border:1px solid transparent;
-    background:transparent;
-    color:#9aa9b7;
-    padding:8px 11px;
-    border-radius:7px;
-    font-size:13px;
+
+.tab {
+
+    background: #172330;
+
+    border: 1px solid #405264;
+
+    color: #cbd5df;
+
+    padding: 8px 11px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+
 }
 
-.nav button.active{
-    color:white;
-    background:#1d4f7a;
-    border-color:#397eb8;
+
+.tab.active {
+
+    background: #2c6594;
+
+    color: white;
+
 }
 
-.actions{
-    margin-left:auto;
-    display:flex;
-    gap:6px;
+
+/* =========================
+   MAP
+========================= */
+
+#map {
+
+    position: fixed;
+
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    overflow: hidden;
+
+    background: #111923;
+
+    touch-action: none;
+
 }
 
-.actions button{
-    background:#131e29;
-    border:1px solid #354858;
-    color:white;
-    border-radius:7px;
-    padding:8px 10px;
+
+#mapImage {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 1000px;
+
+    transform-origin: center;
+
+    user-select: none;
+
+    pointer-events: none;
+
 }
 
-/* MAP */
 
-#map{
-    position:fixed;
-    top:64px;
-    left:0;
-    right:0;
-    bottom:0;
+/* =========================
+   CONTROLS
+========================= */
 
-    overflow:hidden;
-    background:#111923;
+.controls {
 
-    touch-action:none;
+    position: fixed;
+
+    right: 15px;
+    bottom: 20px;
+
+    z-index: 1000;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
 }
 
-#mapImage{
-    position:absolute;
 
-    left:50%;
-    top:50%;
+.controls button {
 
-    width:1200px;
+    width: 46px;
+    height: 46px;
 
-    transform:
-        translate(-50%,-50%)
-        translate(0px,0px)
-        scale(1);
+    background: rgba(10,15,22,0.95);
 
-    transform-origin:center center;
+    color: white;
 
-    user-select:none;
-    -webkit-user-drag:none;
-    pointer-events:none;
+    border: 1px solid #46596b;
+
+    border-radius: 8px;
+
+    font-size: 22px;
+
 }
 
-/* AIRCRAFT */
 
-.aircraft{
-    position:absolute;
+#zoom {
 
-    left:55%;
-    top:42%;
+    position: fixed;
 
-    transform:translate(-50%,-50%);
+    right: 15px;
+    bottom: 175px;
 
-    font-size:25px;
+    z-index: 1000;
 
-    cursor:pointer;
-    z-index:20;
+    background: rgba(10,15,22,0.9);
+
+    color: #bbb;
+
+    padding: 6px 9px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+
 }
 
-.aircraftLabel{
-    position:absolute;
-    left:27px;
-    top:-3px;
 
-    white-space:nowrap;
+@media(max-width:600px) {
 
-    padding:3px 6px;
+    .logo {
 
-    background:rgba(6,11,16,.94);
-    border:1px solid #3b4d5e;
-    border-radius:5px;
+        display: none;
 
-    font-size:10px;
-}
-
-/* CHARTS */
-
-#charts{
-    display:none;
-
-    position:fixed;
-
-    top:64px;
-    left:0;
-    right:0;
-    bottom:0;
-
-    z-index:800;
-
-    background:#0a1017;
-}
-
-.chartTop{
-    height:58px;
-
-    display:flex;
-    align-items:center;
-
-    padding:0 14px;
-
-    gap:10px;
-
-    background:#0d151e;
-
-    border-bottom:1px solid #293a4a;
-}
-
-.chartTitle{
-    font-weight:700;
-    font-size:16px;
-}
-
-.chartSearch{
-    margin-left:auto;
-
-    width:220px;
-    max-width:40%;
-
-    padding:9px 11px;
-
-    border-radius:7px;
-
-    border:1px solid #344858;
-
-    background:#121d27;
-
-    color:white;
-
-    outline:none;
-}
-
-#chartFrame{
-    width:100%;
-    height:calc(100% - 58px);
-
-    border:0;
-
-    background:#111923;
-}
-
-/* AIRCRAFT PANEL */
-
-#aircraftPanel{
-    display:none;
-
-    position:fixed;
-
-    right:16px;
-    top:80px;
-
-    width:315px;
-    max-width:calc(100% - 32px);
-
-    z-index:1200;
-
-    background:rgba(8,14,21,.98);
-
-    border:1px solid #354858;
-
-    border-radius:13px;
-
-    overflow:hidden;
-
-    box-shadow:0 20px 50px rgba(0,0,0,.5);
-}
-
-.panelHeader{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:12px 14px;
-
-    border-bottom:1px solid #293a49;
-}
-
-.panelHeader button{
-    border:0;
-    background:none;
-    color:#9aa8b5;
-    font-size:21px;
-}
-
-.planeImage{
-    height:135px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:70px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #172736,
-            #0c151e
-        );
-}
-
-.panelBody{
-    padding:14px;
-}
-
-.callsign{
-    font-size:22px;
-    font-weight:700;
-}
-
-.airline{
-    margin-top:3px;
-    color:#9caab8;
-}
-
-.aircraftType{
-    margin-top:3px;
-    color:#72808e;
-    font-size:13px;
-}
-
-.stats{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-    margin-top:15px;
-}
-
-.stat{
-    padding:9px;
-
-    background:#131e29;
-
-    border:1px solid #263645;
-
-    border-radius:7px;
-}
-
-.stat small{
-    display:block;
-
-    color:#71808d;
-
-    font-size:9px;
-
-    text-transform:uppercase;
-}
-
-.stat strong{
-    display:block;
-    margin-top:3px;
-}
-
-.route{
-    margin-top:10px;
-
-    padding:10px;
-
-    background:#131e29;
-
-    border:1px solid #263645;
-
-    border-radius:7px;
-}
-
-.route small{
-    color:#71808d;
-}
-
-.route strong{
-    display:block;
-    margin-top:4px;
-}
-
-.flightButton{
-    width:100%;
-
-    margin-top:11px;
-
-    padding:10px;
-
-    border-radius:7px;
-
-    border:1px solid #397eb8;
-
-    background:#1d4f7a;
-
-    color:white;
-}
-
-/* ZOOM */
-
-.controls{
-    position:fixed;
-
-    right:14px;
-    bottom:18px;
-
-    z-index:700;
-
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-}
-
-.controls button{
-    width:44px;
-    height:44px;
-
-    background:rgba(8,14,21,.95);
-
-    color:white;
-
-    border:1px solid #3b4e60;
-
-    border-radius:8px;
-
-    font-size:21px;
-}
-
-#zoom{
-    position:fixed;
-
-    right:14px;
-    bottom:166px;
-
-    z-index:700;
-
-    padding:5px 8px;
-
-    background:rgba(8,14,21,.9);
-
-    color:#9aa8b5;
-
-    border-radius:5px;
-
-    font-size:11px;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-    .logo{
-        font-size:13px;
-        margin-right:5px;
     }
 
-    .nav button{
-        padding:7px;
-        font-size:10px;
+    .tab {
+
+        padding: 7px 8px;
+
+        font-size: 12px;
+
     }
 
-    .actions button{
-        padding:7px;
-    }
-
-    .chartSearch{
-        width:130px;
-    }
 }
+
 </style>
+
 </head>
+
 
 <body>
 
-<!-- TOP BAR -->
+
+<!-- =========================
+     TOP BAR
+========================= -->
 
 <div id="topbar">
 
     <div class="logo">
-        ✈️ vPilot <span>Reimagined</span>
+
+        ✈️ PTFS Tracker
+
     </div>
 
-    <div class="nav">
+
+    <div class="tabs">
 
         <button
-            id="enrouteButton"
-            class="active"
-            onclick="showEnroute(this)">
+        class="tab active"
+        onclick="switchMap('world',this)">
+
+            🌍 World
+
+        </button>
+
+
+        <button
+        class="tab"
+        onclick="switchMap('enroute',this)">
+
             📡 Enroute
+
         </button>
+
 
         <button
-            onclick="showCharts(this)">
+        class="tab"
+        onclick="switchMap('charts',this)">
+
             🛬 Charts
-        </button>
 
-    </div>
-
-    <div class="actions">
-
-        <button onclick="alert('Flight planner is next!')">
-            📝
-        </button>
-
-        <button onclick="searchAircraft()">
-            🔍
         </button>
 
     </div>
@@ -480,162 +276,73 @@ html,body{
 </div>
 
 
-<!-- ENROUTE MAP -->
+<!-- =========================
+     MAP
+========================= -->
 
 <div id="map">
 
     <img
-        id="mapImage"
-        src="https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
-        alt="PTFS Enroute Chart"
-    >
-
-    <!-- Temporary aircraft -->
-
-    <div
-        class="aircraft"
-        onclick="showAircraft()">
-
-        ✈️
-
-        <div class="aircraftLabel">
-            UAE123
-        </div>
-
-    </div>
+    id="mapImage"
+    src="https://roblox-ptfs.fandom.com/wiki/Special:Redirect/file/PTFS%27s_World.png"
+    alt="PTFS World Map">
 
 </div>
 
-
-<!-- CHARTS -->
-
-<div id="charts">
-
-    <div class="chartTop">
-
-        <div class="chartTitle">
-            🛬 PTFS Charts
-        </div>
-
-        <input
-            class="chartSearch"
-            placeholder="Search airport..."
-            oninput="searchChart(this.value)"
-        >
-
-    </div>
-
-    <iframe
-        id="chartFrame"
-        src="https://ptfs.app/charts">
-    </iframe>
-
-</div>
-
-
-<!-- AIRCRAFT INFO -->
-
-<div id="aircraftPanel">
-
-    <div class="panelHeader">
-
-        <strong>
-            Aircraft
-        </strong>
-
-        <button onclick="closeAircraft()">
-            ×
-        </button>
-
-    </div>
-
-    <div class="planeImage">
-        ✈️
-    </div>
-
-    <div class="panelBody">
-
-        <div class="callsign">
-            UAE123
-        </div>
-
-        <div class="airline">
-            Emirates
-        </div>
-
-        <div class="aircraftType">
-            Boeing 777-300ER
-        </div>
-
-        <div class="stats">
-
-            <div class="stat">
-                <small>Altitude</small>
-                <strong>FL350</strong>
-            </div>
-
-            <div class="stat">
-                <small>Speed</small>
-                <strong>472 kt</strong>
-            </div>
-
-            <div class="stat">
-                <small>Heading</small>
-                <strong>274°</strong>
-            </div>
-
-            <div class="stat">
-                <small>Squawk</small>
-                <strong>4201</strong>
-            </div>
-
-        </div>
-
-        <div class="route">
-
-            <small>Flight</small>
-
-            <strong>
-                IRFD → IPPH
-            </strong>
-
-        </div>
-
-        <button
-            class="flightButton"
-            onclick="alert('Flight planning module coming next!')">
-
-            🟣 View Flight Plan
-
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ZOOM -->
 
 <div id="zoom">
+
     100%
+
 </div>
 
+
+<!-- =========================
+     CONTROLS
+========================= -->
 
 <div class="controls">
 
-    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomIn()">
+        +
+    </button>
 
-    <button onclick="zoomOut()">−</button>
+    <button onclick="zoomOut()">
+        −
+    </button>
 
-    <button onclick="resetMap()">⟳</button>
+    <button onclick="resetMap()">
+        ⟳
+    </button>
 
 </div>
 
 
 <script>
 
+
 /* =========================
-   MAP
+   MAP SOURCES
+========================= */
+
+const maps = {
+
+    world:
+    "https://roblox-ptfs.fandom.com/wiki/Special:Redirect/file/PTFS%27s_World.png",
+
+
+    enroute:
+    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg",
+
+
+    charts:
+    "https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg"
+
+};
+
+
+/* =========================
+   VARIABLES
 ========================= */
 
 const map =
@@ -644,11 +351,15 @@ document.getElementById("map");
 const image =
 document.getElementById("mapImage");
 
+const zoomText =
+document.getElementById("zoom");
+
+
 let scale = 1;
 
-let offsetX = 0;
+let x = 0;
 
-let offsetY = 0;
+let y = 0;
 
 let pointers = new Map();
 
@@ -659,82 +370,193 @@ let lastY = 0;
 let lastDistance = null;
 
 
-/* UPDATE MAP */
+/* =========================
+   SWITCH MAP
+========================= */
 
-function updateMap(){
+function switchMap(type, button) {
+
+    image.src = maps[type];
+
+
+    document
+    .querySelectorAll(".tab")
+    .forEach(tab => {
+
+        tab.classList.remove("active");
+
+    });
+
+
+    button.classList.add("active");
+
+
+    resetMap();
+
+}
+
+
+/* =========================
+   UPDATE MAP
+========================= */
+
+function updateMap() {
 
     image.style.transform =
-        `translate(-50%,-50%)
-         translate(${offsetX}px,${offsetY}px)
-         scale(${scale})`;
 
-    document.getElementById("zoom")
-        .textContent =
-        Math.round(scale * 100) + "%";
+    `translate(-50%, -50%)
+     translate(${x}px,${y}px)
+     scale(${scale})`;
+
+
+    zoomText.textContent =
+
+    Math.round(scale * 100) + "%";
+
 }
 
 
-/* ZOOM */
+/* =========================
+   ZOOM
+========================= */
 
-function zoomIn(){
+function zoomAt(
 
-    scale =
-        Math.min(5, scale * 1.25);
+    newScale,
+    centerX,
+    centerY
+
+) {
+
+    newScale =
+
+        Math.max(
+            0.5,
+            Math.min(5,newScale)
+        );
+
+
+    const rect =
+        map.getBoundingClientRect();
+
+
+    const mx =
+
+        centerX -
+        rect.left -
+        rect.width / 2;
+
+
+    const my =
+
+        centerY -
+        rect.top -
+        rect.height / 2;
+
+
+    const factor =
+
+        newScale / scale;
+
+
+    x =
+
+        mx -
+        (mx - x) * factor;
+
+
+    y =
+
+        my -
+        (my - y) * factor;
+
+
+    scale = newScale;
+
 
     updateMap();
+
 }
 
 
-function zoomOut(){
-
-    scale =
-        Math.max(.5, scale * .8);
-
-    updateMap();
-}
-
-
-function resetMap(){
-
-    scale = 1;
-
-    offsetX = 0;
-
-    offsetY = 0;
-
-    updateMap();
-}
-
-
-/* TOUCH / MOUSE PAN */
+/* =========================
+   MOUSE WHEEL
+========================= */
 
 map.addEventListener(
+
+    "wheel",
+
+    function(event) {
+
+        event.preventDefault();
+
+
+        zoomAt(
+
+            scale *
+            (event.deltaY < 0
+            ? 1.15
+            : 0.87),
+
+            event.clientX,
+
+            event.clientY
+
+        );
+
+    },
+
+    {passive:false}
+
+);
+
+
+/* =========================
+   TOUCH / MOUSE
+========================= */
+
+map.addEventListener(
+
     "pointerdown",
-    function(e){
+
+    function(event) {
 
         pointers.set(
-            e.pointerId,
+
+            event.pointerId,
+
             {
-                x:e.clientX,
-                y:e.clientY
+                x:event.clientX,
+                y:event.clientY
             }
+
         );
+
 
         map.setPointerCapture(
-            e.pointerId
+
+            event.pointerId
+
         );
 
-        if(pointers.size === 1){
 
-            lastX = e.clientX;
-            lastY = e.clientY;
+        if(pointers.size === 1) {
+
+            lastX =
+                event.clientX;
+
+            lastY =
+                event.clientY;
 
         }
 
-        if(pointers.size === 2){
+
+        if(pointers.size === 2) {
 
             const p =
                 [...pointers.values()];
+
 
             lastDistance =
                 distance(p[0],p[1]);
@@ -742,37 +564,55 @@ map.addEventListener(
         }
 
     }
+
 );
 
 
 map.addEventListener(
-    "pointermove",
-    function(e){
 
-        if(!pointers.has(e.pointerId))
+    "pointermove",
+
+    function(event) {
+
+        if(
+            !pointers.has(
+                event.pointerId
+            )
+        )
             return;
 
+
         pointers.set(
-            e.pointerId,
+
+            event.pointerId,
+
             {
-                x:e.clientX,
-                y:e.clientY
+                x:event.clientX,
+                y:event.clientY
             }
+
         );
 
 
         /* PAN */
 
-        if(pointers.size === 1){
+        if(pointers.size === 1) {
 
-            offsetX +=
-                e.clientX - lastX;
+            x +=
+                event.clientX - lastX;
 
-            offsetY +=
-                e.clientY - lastY;
 
-            lastX = e.clientX;
-            lastY = e.clientY;
+            y +=
+                event.clientY - lastY;
+
+
+            lastX =
+                event.clientX;
+
+
+            lastY =
+                event.clientY;
+
 
             updateMap();
 
@@ -781,29 +621,34 @@ map.addEventListener(
 
         /* PINCH */
 
-        if(pointers.size === 2){
+        if(pointers.size === 2) {
 
             const p =
                 [...pointers.values()];
 
+
             const newDistance =
                 distance(p[0],p[1]);
 
-            if(lastDistance){
 
-                scale *=
-                    newDistance /
-                    lastDistance;
+            if(lastDistance !== null) {
 
-                scale =
-                    Math.max(
-                        .5,
-                        Math.min(5,scale)
-                    );
+                zoomAt(
 
-                updateMap();
+                    scale *
+                    (
+                        newDistance /
+                        lastDistance
+                    ),
+
+                    (p[0].x+p[1].x)/2,
+
+                    (p[0].y+p[1].y)/2
+
+                );
 
             }
+
 
             lastDistance =
                 newDistance;
@@ -811,153 +656,111 @@ map.addEventListener(
         }
 
     }
+
 );
+
+
+function endPointer(event) {
+
+    pointers.delete(
+        event.pointerId
+    );
+
+
+    if(pointers.size < 2) {
+
+        lastDistance = null;
+
+    }
+
+}
 
 
 map.addEventListener(
     "pointerup",
-    function(e){
-
-        pointers.delete(
-            e.pointerId
-        );
-
-        if(pointers.size < 2){
-
-            lastDistance = null;
-
-        }
-
-    }
+    endPointer
 );
 
 
 map.addEventListener(
     "pointercancel",
-    function(e){
-
-        pointers.delete(
-            e.pointerId
-        );
-
-    }
+    endPointer
 );
 
 
-function distance(a,b){
+/* =========================
+   HELPERS
+========================= */
+
+function distance(a,b) {
 
     const dx =
-        a.x - b.x;
+        a.x-b.x;
+
 
     const dy =
-        a.y - b.y;
+        a.y-b.y;
+
 
     return Math.sqrt(
         dx*dx + dy*dy
     );
-}
-
-
-/* =========================
-   NAVIGATION
-========================= */
-
-function activate(button){
-
-    document
-        .querySelectorAll(".nav button")
-        .forEach(
-            b => b.classList.remove("active")
-        );
-
-    button.classList.add("active");
-
-}
-
-
-function showEnroute(button){
-
-    activate(button);
-
-    document
-        .getElementById("map")
-        .style.display = "block";
-
-    document
-        .getElementById("charts")
-        .style.display = "none";
-
-}
-
-
-function showCharts(button){
-
-    activate(button);
-
-    document
-        .getElementById("map")
-        .style.display = "none";
-
-    document
-        .getElementById("charts")
-        .style.display = "block";
 
 }
 
 
 /* =========================
-   AIRCRAFT
+   BUTTONS
 ========================= */
 
-function showAircraft(){
+function zoomIn() {
 
-    document
-        .getElementById("aircraftPanel")
-        .style.display = "block";
+    zoomAt(
 
-}
+        scale * 1.3,
 
+        window.innerWidth/2,
 
-function closeAircraft(){
+        window.innerHeight/2
 
-    document
-        .getElementById("aircraftPanel")
-        .style.display = "none";
-
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function searchAircraft(){
-
-    alert(
-        "Live aircraft search will be connected when we add the PTFS server backend."
     );
 
 }
 
 
-function searchChart(value){
+function zoomOut() {
 
-    /*
-       The current PTFS Charts page is loaded
-       in the chart viewer.
+    zoomAt(
 
-       Airport filtering will be connected
-       to our own chart database next.
-    */
+        scale * 0.77,
+
+        window.innerWidth/2,
+
+        window.innerHeight/2
+
+    );
 
 }
 
 
-/* START */
+function resetMap() {
+
+    scale = 1;
+
+    x = 0;
+
+    y = 0;
+
+    updateMap();
+
+}
+
 
 updateMap();
 
 </script>
 
+
 </body>
+
 </html>
