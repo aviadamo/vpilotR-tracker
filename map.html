@@ -2,523 +2,382 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>PTFS Flight Planner</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#101820;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #111820;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+#topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:58px;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 12px;
+    background:rgba(5,12,18,.97);
+    border-bottom:1px solid #344854;
 }
 
-/* =========================
-   TOP BAR
-========================= */
-
-#topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 58px;
-    z-index: 100;
-
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 0 12px;
-
-    background: rgba(6, 14, 21, 0.96);
-    border-bottom: 1px solid #334654;
+.logo{
+    font-weight:800;
+    margin-right:8px;
 }
 
-.logo {
-    font-size: 15px;
-    font-weight: 800;
-    margin-right: 7px;
+.logo span{
+    color:#ffb000;
 }
 
-.logo span {
-    color: #ffb000;
+button{
+    font-family:inherit;
 }
 
-.topButton {
-    border: 1px solid #3b5060;
-    background: #14232e;
-    color: white;
-
-    padding: 8px 11px;
-    border-radius: 7px;
-
-    cursor: pointer;
+.topBtn{
+    background:#14242f;
+    border:1px solid #405563;
+    color:white;
+    padding:8px 12px;
+    border-radius:7px;
+    cursor:pointer;
 }
 
-.topButton:hover {
-    background: #1c303e;
+.topBtn:hover{
+    background:#1d3442;
 }
 
-#status {
-    margin-left: auto;
-    color: #82909a;
-    font-size: 11px;
+#status{
+    margin-left:auto;
+    font-size:11px;
+    color:#84949e;
 }
 
-/* =========================
-   MAP
-========================= */
-
-#map {
-    position: fixed;
-    top: 58px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    overflow: hidden;
-
-    background: #111820;
-
-    touch-action: none;
-    cursor: grab;
+#map{
+    position:fixed;
+    top:58px;
+    left:0;
+    right:0;
+    bottom:0;
+    overflow:hidden;
+    background:#101820;
+    cursor:grab;
+    touch-action:none;
 }
 
-#map:active {
-    cursor: grabbing;
+#map.dragging{
+    cursor:grabbing;
 }
 
-#chart {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform-origin: center center;
+#world{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform-origin:center center;
 }
 
-#chart svg {
-    display: block;
-    max-width: none;
+#chart{
+    position:absolute;
+    left:0;
+    top:0;
 }
 
-/* =========================
-   ROUTE OVERLAY
-========================= */
-
-#routeOverlay {
-    position: absolute;
-
-    pointer-events: none;
-
-    z-index: 20;
-
-    transform-origin: top left;
+#routeSvg{
+    position:absolute;
+    left:0;
+    top:0;
+    pointer-events:none;
+    overflow:visible;
 }
 
-#routeLine {
-    fill: none;
-
-    stroke: #ffb000;
-    stroke-width: 3;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-
-    filter:
-        drop-shadow(0 0 2px black)
-        drop-shadow(0 0 4px black);
+#routeLine{
+    fill:none;
+    stroke:#ffb000;
+    stroke-width:4;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    filter:drop-shadow(0 0 3px #000);
 }
 
-.routeWaypoint {
-    fill: #ffb000;
-    stroke: #111;
-    stroke-width: 1.5;
+.routeDot{
+    fill:#ffb000;
+    stroke:#111820;
+    stroke-width:2;
 }
 
-/* =========================
-   AIRCRAFT
-========================= */
+/* AIRCRAFT */
 
-#aircraft {
-    position: absolute;
-
-    width: 70px;
-    height: 70px;
-
-    z-index: 40;
-
-    transform: translate(-50%, -50%);
-
-    cursor: pointer;
+#aircraft{
+    position:absolute;
+    width:70px;
+    height:70px;
+    z-index:50;
+    transform:translate(-50%,-50%);
+    cursor:pointer;
 }
 
-#aircraftIcon {
-    position: absolute;
-
-    width: 55px;
-    height: 55px;
-
-    left: 50%;
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    transform-origin: center center;
+#aircraftSvg{
+    width:60px;
+    height:60px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    transform-origin:center center;
+    filter:drop-shadow(0 1px 2px #000);
 }
 
-#aircraftLabel {
-    position: absolute;
-
-    left: 42px;
-    top: 7px;
-
-    padding: 3px 6px;
-
-    background: rgba(4, 12, 18, 0.92);
-
-    border: 1px solid #40515d;
-    border-radius: 5px;
-
-    font-size: 10px;
-
-    white-space: nowrap;
+#aircraftLabel{
+    position:absolute;
+    left:40px;
+    top:5px;
+    background:rgba(5,12,18,.94);
+    border:1px solid #4a5d69;
+    border-radius:5px;
+    padding:3px 6px;
+    white-space:nowrap;
+    font-size:10px;
 }
 
-/* =========================
-   ZOOM
-========================= */
+/* ZOOM */
 
-#zoomControls {
-    position: fixed;
-
-    right: 13px;
-    bottom: 13px;
-
-    z-index: 80;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 6px;
+#zoom{
+    position:fixed;
+    right:13px;
+    bottom:13px;
+    z-index:80;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
 }
 
-.zoomButton {
-    width: 42px;
-    height: 42px;
-
-    border-radius: 8px;
-
-    border: 1px solid #3b5060;
-
-    background: rgba(6, 15, 22, 0.94);
-
-    color: white;
-
-    font-size: 21px;
-
-    cursor: pointer;
+.zoomBtn{
+    width:42px;
+    height:42px;
+    background:rgba(5,13,19,.94);
+    color:white;
+    border:1px solid #405563;
+    border-radius:8px;
+    font-size:21px;
+    cursor:pointer;
 }
 
-.zoomButton:hover {
-    background: #1b2d3a;
+#zoomLevel{
+    position:fixed;
+    right:16px;
+    bottom:155px;
+    z-index:80;
+    background:rgba(5,13,19,.9);
+    padding:4px 7px;
+    border-radius:5px;
+    font-size:10px;
+    color:#8b9ba4;
 }
 
-#zoomText {
-    position: fixed;
+/* PANELS */
 
-    right: 16px;
-    bottom: 151px;
-
-    z-index: 80;
-
-    background: rgba(4, 12, 18, 0.9);
-
-    padding: 4px 7px;
-
-    border-radius: 5px;
-
-    color: #82909a;
-
-    font-size: 10px;
+.panel{
+    position:fixed;
+    top:70px;
+    left:12px;
+    width:430px;
+    max-width:calc(100vw - 24px);
+    max-height:calc(100vh - 82px);
+    overflow:auto;
+    display:none;
+    z-index:90;
+    background:rgba(5,13,20,.98);
+    border:1px solid #405563;
+    border-radius:12px;
+    box-shadow:0 20px 70px rgba(0,0,0,.65);
 }
 
-/* =========================
-   PANELS
-========================= */
-
-.panel {
-    position: fixed;
-
-    z-index: 70;
-
-    top: 70px;
-    left: 12px;
-
-    width: 410px;
-    max-width: calc(100vw - 24px);
-
-    max-height: calc(100vh - 82px);
-
-    overflow-y: auto;
-
-    display: none;
-
-    background: rgba(5, 13, 20, 0.97);
-
-    border: 1px solid #3b4e5c;
-
-    border-radius: 12px;
-
-    box-shadow: 0 20px 70px rgba(0,0,0,.6);
+.header{
+    padding:12px;
+    border-bottom:1px solid #293b47;
+    display:flex;
+    align-items:center;
 }
 
-.panelHeader {
-    display: flex;
-    align-items: center;
-
-    padding: 12px;
-
-    border-bottom: 1px solid #293a46;
+.header strong{
+    font-size:15px;
 }
 
-.panelHeader strong {
-    font-size: 15px;
+.close{
+    margin-left:auto;
+    border:0;
+    background:none;
+    color:#8d9ba3;
+    font-size:24px;
+    cursor:pointer;
 }
 
-.closeButton {
-    margin-left: auto;
-
-    border: 0;
-    background: none;
-
-    color: #8997a0;
-
-    font-size: 23px;
-
-    cursor: pointer;
+.body{
+    padding:12px;
 }
 
-.panelBody {
-    padding: 12px;
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
 }
 
-/* =========================
-   FORM
-========================= */
-
-.grid {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 8px;
+.field{
+    margin-bottom:9px;
 }
 
-.field {
-    margin-bottom: 9px;
+.field label{
+    display:block;
+    color:#7e8e98;
+    font-size:9px;
+    text-transform:uppercase;
+    margin-bottom:4px;
 }
 
-.field label {
-    display: block;
-
-    margin-bottom: 4px;
-
-    color: #81909a;
-
-    font-size: 9px;
-
-    text-transform: uppercase;
+select{
+    width:100%;
+    padding:9px;
+    background:#101d26;
+    border:1px solid #3a4e5b;
+    color:white;
+    border-radius:7px;
+    outline:none;
 }
 
-select {
-    width: 100%;
-
-    padding: 9px;
-
-    background: #101c25;
-
-    color: white;
-
-    border: 1px solid #354a58;
-
-    border-radius: 7px;
-
-    outline: none;
+select:focus{
+    border-color:#66a8d3;
 }
 
-select:focus {
-    border-color: #6099bc;
+.primary{
+    width:100%;
+    padding:11px;
+    background:#1d5f8e;
+    border:1px solid #69a8d0;
+    color:white;
+    border-radius:7px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.primaryButton {
-    width: 100%;
-
-    padding: 11px;
-
-    border-radius: 7px;
-
-    border: 1px solid #67a4cf;
-
-    background: #1c5b87;
-
-    color: white;
-
-    font-weight: bold;
-
-    cursor: pointer;
+.secondary{
+    width:100%;
+    padding:9px;
+    margin-top:7px;
+    background:#14242f;
+    border:1px solid #3a4e5b;
+    color:#aeb8bd;
+    border-radius:7px;
+    cursor:pointer;
 }
 
-.primaryButton:hover {
-    background: #2472a7;
+#result{
+    display:none;
+    margin-top:12px;
+    border-top:1px solid #293b47;
+    padding-top:12px;
 }
 
-.secondaryButton {
-    width: 100%;
-
-    margin-top: 7px;
-
-    padding: 9px;
-
-    border-radius: 7px;
-
-    border: 1px solid #354a58;
-
-    background: #14232e;
-
-    color: #aeb8be;
-
-    cursor: pointer;
+.routeBox{
+    background:#101d26;
+    border:1px solid #3a4e5b;
+    border-radius:7px;
+    padding:10px;
+    color:#ffbd3d;
+    font-size:12px;
+    line-height:1.7;
+    word-break:break-word;
 }
 
-/* =========================
-   RESULT
-========================= */
+/* AIRCRAFT INFO */
 
-#routeResult {
-    display: none;
-
-    margin-top: 12px;
-    padding-top: 12px;
-
-    border-top: 1px solid #293a46;
+#info{
+    position:fixed;
+    top:70px;
+    right:12px;
+    width:320px;
+    max-width:calc(100vw - 24px);
+    display:none;
+    z-index:95;
+    background:rgba(5,13,20,.98);
+    border:1px solid #405563;
+    border-radius:12px;
+    box-shadow:0 20px 70px rgba(0,0,0,.65);
 }
 
-.routeBox {
-    padding: 10px;
-
-    background: #101c25;
-
-    border: 1px solid #354a58;
-
-    border-radius: 7px;
-
-    color: #ffbd3d;
-
-    font-size: 12px;
-
-    line-height: 1.7;
-
-    word-break: break-word;
+.infoBody{
+    padding:13px;
 }
 
-.routeInfo {
-    margin-top: 7px;
-
-    color: #7f8f99;
-
-    font-size: 10px;
+.callsign{
+    font-size:20px;
+    font-weight:800;
 }
 
-/* =========================
-   AIRCRAFT INFO
-========================= */
-
-#aircraftInfo {
-    position: fixed;
-
-    z-index: 75;
-
-    top: 70px;
-    right: 12px;
-
-    width: 320px;
-    max-width: calc(100vw - 24px);
-
-    display: none;
-
-    background: rgba(5, 13, 20, 0.97);
-
-    border: 1px solid #3b4e5c;
-
-    border-radius: 12px;
-
-    box-shadow: 0 20px 70px rgba(0,0,0,.6);
+.user{
+    color:#54a9ff;
+    font-size:12px;
+    margin-top:4px;
 }
 
-.infoBody {
-    padding: 13px;
+.infoLine{
+    color:#84949e;
+    font-size:12px;
+    margin-top:7px;
 }
 
-.callsign {
-    font-size: 20px;
-    font-weight: 800;
+#loading{
+    position:fixed;
+    top:58px;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#101820;
+    color:#8999a3;
 }
 
-.username {
-    margin-top: 4px;
-
-    color: #58aaff;
-
-    font-size: 12px;
+.attribution{
+    position:fixed;
+    bottom:5px;
+    left:7px;
+    z-index:70;
+    font-size:8px;
+    color:#687983;
+    pointer-events:none;
 }
 
-.infoLine {
-    margin-top: 7px;
+@media(max-width:600px){
+    .logo{
+        display:none;
+    }
 
-    color: #8796a0;
+    #status{
+        display:none;
+    }
 
-    font-size: 12px;
-}
-
-/* =========================
-   LOADING
-========================= */
-
-#loading {
-    position: fixed;
-
-    inset: 58px 0 0;
-
-    z-index: 200;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #111820;
-
-    color: #9ba8b0;
+    .grid{
+        grid-template-columns:1fr;
+    }
 }
 </style>
 </head>
 
 <body>
-
-<!-- =========================
-     TOP BAR
-========================= -->
 
 <div id="topbar">
 
@@ -526,47 +385,43 @@ select:focus {
         ✈ PTFS <span>Flight Planner</span>
     </div>
 
-    <button class="topButton" onclick="openPlanner()">
+    <button class="topBtn" onclick="openPlanner()">
         📝 Flight Plan
     </button>
 
-    <button class="topButton" onclick="resetMap()">
+    <button class="topBtn" onclick="resetMap()">
         🗺 Reset
     </button>
 
     <div id="status">
-        Loading…
+        Loading chart…
     </div>
 
 </div>
 
 
-<!-- =========================
-     MAP
-========================= -->
-
 <div id="map">
 
-    <div id="chart"></div>
+    <div id="world">
 
-    <svg id="routeOverlay">
-        <polyline id="routeLine"></polyline>
+        <div id="chart"></div>
 
-        <g id="routeWaypoints"></g>
-    </svg>
+        <svg id="routeSvg">
+            <polyline id="routeLine"></polyline>
+            <g id="routeDots"></g>
+        </svg>
 
+        <div id="aircraft">
 
-    <!-- FILLED YELLOW AIRCRAFT -->
+            <svg
+                id="aircraftSvg"
+                viewBox="0 0 100 100"
+            ></svg>
 
-    <div id="aircraft">
+            <div id="aircraftLabel">
+                UAE123
+            </div>
 
-        <svg
-            id="aircraftIcon"
-            viewBox="0 0 100 100"
-        ></svg>
-
-        <div id="aircraftLabel">
-            UAE123
         </div>
 
     </div>
@@ -574,85 +429,44 @@ select:focus {
 </div>
 
 
-<!-- =========================
-     LOADING
-========================= -->
+<div id="zoomLevel">100%</div>
 
-<div id="loading">
-    Loading PTFS enroute chart…
-</div>
+<div id="zoom">
 
+    <button class="zoomBtn" onclick="zoomIn()">+</button>
 
-<!-- =========================
-     ZOOM
-========================= -->
+    <button class="zoomBtn" onclick="zoomOut()">−</button>
 
-<div id="zoomText">
-    100%
-</div>
-
-<div id="zoomControls">
-
-    <button
-        class="zoomButton"
-        onclick="zoomIn()"
-    >+</button>
-
-    <button
-        class="zoomButton"
-        onclick="zoomOut()"
-    >−</button>
-
-    <button
-        class="zoomButton"
-        onclick="resetMap()"
-    >⟳</button>
+    <button class="zoomBtn" onclick="resetMap()">⟳</button>
 
 </div>
 
-
-<!-- =========================
-     FLIGHT PLANNER
-========================= -->
 
 <div id="planner" class="panel">
 
-    <div class="panelHeader">
+    <div class="header">
 
-        <strong>
-            Flight Planner
-        </strong>
+        <strong>Flight Planner</strong>
 
-        <button
-            class="closeButton"
-            onclick="closePlanner()"
-        >
-            ×
-        </button>
+        <button class="close" onclick="closePlanner()">×</button>
 
     </div>
 
-
-    <div class="panelBody">
+    <div class="body">
 
         <div class="grid">
 
             <div class="field">
 
-                <label>
-                    Departure Airport
-                </label>
+                <label>Departure</label>
 
                 <select id="departure"></select>
 
             </div>
 
-
             <div class="field">
 
-                <label>
-                    Arrival Airport
-                </label>
+                <label>Arrival</label>
 
                 <select id="arrival"></select>
 
@@ -665,22 +479,17 @@ select:focus {
 
             <div class="field">
 
-                <label>
-                    Departure Runway
-                </label>
+                <label>Departure runway</label>
 
-                <select id="departureRunway"></select>
+                <select id="depRunway"></select>
 
             </div>
 
-
             <div class="field">
 
-                <label>
-                    Arrival Runway
-                </label>
+                <label>Arrival runway</label>
 
-                <select id="arrivalRunway"></select>
+                <select id="arrRunway"></select>
 
             </div>
 
@@ -691,20 +500,15 @@ select:focus {
 
             <div class="field">
 
-                <label>
-                    SID
-                </label>
+                <label>SID</label>
 
                 <select id="sid"></select>
 
             </div>
 
-
             <div class="field">
 
-                <label>
-                    STAR
-                </label>
+                <label>STAR</label>
 
                 <select id="star"></select>
 
@@ -717,42 +521,14 @@ select:focus {
 
             <div class="field">
 
-                <label>
-                    SID Transition
-                </label>
-
-                <select id="sidTransition"></select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    STAR Transition
-                </label>
-
-                <select id="starTransition"></select>
-
-            </div>
-
-        </div>
-
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label>
-                    Aircraft
-                </label>
+                <label>Aircraft</label>
 
                 <select id="aircraftType">
 
                     <option>A220</option>
                     <option>A318</option>
                     <option>A319</option>
-                    <option selected>A320</option>
+                    <option>A320</option>
                     <option>A321</option>
                     <option>A330</option>
                     <option>A340</option>
@@ -779,12 +555,9 @@ select:focus {
 
             </div>
 
-
             <div class="field">
 
-                <label>
-                    Cruise Flight Level
-                </label>
+                <label>Flight level</label>
 
                 <select id="flightLevel"></select>
 
@@ -794,28 +567,26 @@ select:focus {
 
 
         <button
-            class="primaryButton"
-            onclick="generateFlightPlan()"
+            class="primary"
+            onclick="generateRoute()"
         >
             ✈ Generate Route
         </button>
 
 
         <button
-            class="secondaryButton"
+            class="secondary"
             onclick="clearRoute()"
         >
             Clear Route
         </button>
 
 
-        <div id="routeResult">
+        <div id="result">
 
             <div class="field">
 
-                <label>
-                    Generated Route
-                </label>
+                <label>Route</label>
 
                 <div
                     id="routeText"
@@ -824,12 +595,6 @@ select:focus {
 
             </div>
 
-
-            <div
-                id="routeInfo"
-                class="routeInfo"
-            ></div>
-
         </div>
 
     </div>
@@ -837,27 +602,20 @@ select:focus {
 </div>
 
 
-<!-- =========================
-     AIRCRAFT INFO
-========================= -->
+<div id="info">
 
-<div id="aircraftInfo">
+    <div class="header">
 
-    <div class="panelHeader">
-
-        <strong>
-            Aircraft
-        </strong>
+        <strong>Aircraft</strong>
 
         <button
-            class="closeButton"
-            onclick="closeAircraftInfo()"
+            class="close"
+            onclick="closeInfo()"
         >
             ×
         </button>
 
     </div>
-
 
     <div class="infoBody">
 
@@ -868,14 +626,12 @@ select:focus {
             UAE123
         </div>
 
-
         <div
-            id="infoUsername"
-            class="username"
+            id="infoUser"
+            class="user"
         >
             Roblox: PilotExample
         </div>
-
 
         <div
             id="infoAirline"
@@ -884,14 +640,12 @@ select:focus {
             Airline: Emirates
         </div>
 
-
         <div
-            id="infoAircraft"
+            id="infoType"
             class="infoLine"
         >
             Aircraft: A320
         </div>
-
 
         <div
             id="infoHeading"
@@ -905,411 +659,219 @@ select:focus {
 </div>
 
 
+<div class="attribution">
+    PTFS Charts by Treelon — CC BY-SA 4.0
+</div>
+
+
+<div id="loading">
+    Loading PTFS enroute chart…
+</div>
+
+
 <script>
 
-/* ============================================================
-   CONFIG
-============================================================ */
+/* =========================================================
+   REAL PTFS ENROUTE CHART
+========================================================= */
 
 const CHART_URL =
-"https://raw.githubusercontent.com/RexKramer1/AircraftShapesSVG/main/Shapes%20SVG/A388.svg";
+"https://raw.githubusercontent.com/Treelon/ptfs-charts/main/Airspace%20map/Enroute%20Chart%20PTFS.svg";
 
 
-/*
-   If you already have your PTFS enroute SVG locally,
-   change the line above to its filename.
-
-   Example:
-
-   const CHART_URL = "enroute.svg";
-
-   The planner reads waypoint labels directly from the SVG.
-*/
-
-
-/* ============================================================
+/* =========================================================
    AIRPORTS
-============================================================ */
+========================================================= */
 
-const airports = [
+const AIRPORTS = {
 
-    "IBAR",
-    "IHEN",
-    "ILAR",
-    "IPAP",
-    "IGRV",
-    "IJAF",
-    "IZOL",
-    "ISCM",
-    "IDCS",
-    "ITKO",
-    "ILKL",
-    "IPPH",
-    "IGAR",
-    "IBLT",
-    "IRFD",
-    "IMLR",
-    "ITRC",
-    "IBTH",
-    "IUFO",
-    "ISAU",
-    "ISKP"
+    IBAR:"Barra Airport",
+    IHEN:"Henstridge Airfield",
+    ILAR:"Larnaca Intl.",
+    IIAB:"McConnell AFB",
+    IPAP:"Paphos Intl.",
 
-];
+    IKFL:"Keflavik Intl.",
+    ITEY:"Pingeyri Airport",
 
+    IJAF:"Al Najaf",
+    IZOL:"Izolirani Intl.",
+    ISCM:"RAF Scampton",
 
-const airportNames = {
+    IBRD:"Bird Island Airfield",
+    IDCS:"Saba Airport",
+    ITKO:"Tokyo Intl.",
 
-    IBAR: "Barra",
-    IHEN: "Henstridge",
-    ILAR: "Larnaca",
-    IPAP: "Paphos",
-    IGRV: "Grindavik",
-    IJAF: "Al Najaf",
-    IZOL: "Izolirani",
-    ISCM: "Scampton",
-    IDCS: "Saba",
-    ITKO: "Tokyo",
-    ILKL: "Lukla",
-    IPPH: "Perth",
-    IGAR: "Air Base Garry",
-    IBLT: "Boltic",
-    IRFD: "Greater Rockford",
-    IMLR: "Mellor",
-    ITRC: "Training Centre",
-    IBTH: "Saint Barthélemy",
-    IUFO: "UFO Base",
-    ISAU: "Sauthemptona",
-    ISKP: "Skopelos"
+    ILKL:"Lukla Airport",
+    IPPH:"Perth Intl.",
+
+    IGAR:"Air Base Garry",
+    IBLT:"Boltic Airfield",
+    IRFD:"Greater Rockford",
+    IMLR:"Mellor Intl.",
+    ITRC:"Training Centre",
+
+    IBTH:"Saint Barthelemy",
+    IUFO:"UFO Base",
+
+    ISAU:"Sauthamptona Airport",
+
+    ISKP:"Skopelos Airfield"
 
 };
 
 
-/* ============================================================
+/* =========================================================
    RUNWAYS
-============================================================ */
+========================================================= */
 
-const runways = {
+const RUNWAYS = {
 
-    IRFD: [
-        "18L",
-        "18R",
-        "36L",
-        "36R"
-    ],
-
-    IPPH: [
-        "03",
-        "21"
-    ],
-
-    ILAR: [
-        "04",
-        "22"
-    ],
-
-    IPAP: [
-        "16",
-        "34"
-    ],
-
-    ITKO: [
-        "04",
-        "22"
-    ],
-
-    IGRV: [
-        "09",
-        "27"
-    ],
-
-    IZOL: [
-        "05",
-        "23"
-    ],
-
-    ISCM: [
-        "08",
-        "26"
-    ],
-
-    ISA U: [
-        "03",
-        "21"
-    ],
-
-    IBTH: [
-        "10",
-        "28"
-    ],
-
-    IMLR: [
-        "14",
-        "32"
-    ],
-
-    IGAR: [
-        "09",
-        "27"
-    ],
-
-    IBLT: [
-        "12",
-        "30"
-    ],
-
-    ILKL: [
-        "12",
-        "30"
-    ],
-
-    IBAR: [
-        "06",
-        "24"
-    ],
-
-    IHEN: [
-        "09",
-        "27"
-    ],
-
-    IDCS: [
-        "12",
-        "30"
-    ],
-
-    ISKP: [
-        "02",
-        "20"
-    ],
-
-    IJAF: [
-        "09",
-        "27"
-    ],
-
-    IUFO: [
-        "09",
-        "27"
-    ],
-
-    ITRC: [
-        "09",
-        "27"
-    ]
+    IRFD:["18L","18R","36L","36R"],
+    IMLR:["14","32"],
+    IPPH:["03","21"],
+    ITKO:["16L","16R","34L","34R"],
+    ILAR:["04","22"],
+    IPAP:["16","34"],
+    IZOL:["05","23"],
+    IJAF:["09","27"],
+    ISAU:["03","21"],
+    IGRV:["09","27"],
+    ISKP:["02","20"],
+    IBTH:["10","28"],
+    ILKL:["12","30"],
+    IGAR:["09","27"],
+    IBLT:["12","30"],
+    IBAR:["06","24"],
+    IHEN:["09","27"],
+    IDCS:["12","30"],
+    ISCM:["08","26"],
+    IIAB:["18","36"],
+    IKFL:["02","20"],
+    ITEY:["04","22"],
+    IBRD:["09","27"],
+    IUFO:["09","27"],
+    ITRC:["09","27"]
 
 };
 
 
-/* ============================================================
-   PROCEDURES
-============================================================ */
+/* =========================================================
+   BASIC PROCEDURES
 
-const procedures = {
+   These are deliberately selectable.
+   The route engine uses the actual enroute fixes
+   from the PTFS chart.
+========================================================= */
 
-    IRFD: {
+const SIDS = {
 
-        sid: [
-            "OMNI-DIRECTIONAL",
-            "SAVES 6C",
-            "INDEX 1A",
-            "SAVES 1A",
-            "SETHR 1A"
-        ],
+    IRFD:[
+        "NONE",
+        "SAVES",
+        "INDEX",
+        "SETHR",
+        "FORIA"
+    ],
 
-        star: [
-            "NONE",
-            "BEANS 3E",
-            "CRACK 3M",
-            "GUESS 3M",
-            "FORIA 4M",
-            "RESURGE 4M",
-            "SETHR 4M"
-        ]
-
-    },
-
-    IPPH: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    ILAR: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    IPAP: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    ITKO: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    IGRV: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    IZOL: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    },
-
-    ISA U: {
-
-        sid: [
-            "OMNI-DIRECTIONAL"
-        ],
-
-        star: [
-            "NONE",
-            "PUBLISHED STAR"
-        ]
-
-    }
+    IPPH:["NONE"],
+    IMLR:["NONE"],
+    ITKO:["NONE"],
+    ILAR:["NONE"],
+    IPAP:["NONE"],
+    IZOL:["NONE"],
+    IJAF:["NONE"],
+    ISAU:["NONE"],
+    IGRV:["NONE"],
+    ISKP:["NONE"]
 
 };
 
 
-/* ============================================================
-   TRANSITIONS
-============================================================ */
+const STARS = {
 
-const transitions = {
+    IRFD:[
+        "NONE",
+        "BEANS",
+        "CRACK",
+        "GUESS",
+        "FORIA",
+        "RESURGE",
+        "SETHR"
+    ],
 
-    IRFD: {
-
-        sid: [
-            "NONE / DIRECT",
-            "FORIA",
-            "JAMSI",
-            "SETHR"
-        ],
-
-        star: [
-            "NONE / DIRECT"
-        ]
-
-    }
+    IPPH:["NONE"],
+    IMLR:["NONE"],
+    ITKO:["NONE"],
+    ILAR:["NONE"],
+    IPAP:["NONE"],
+    IZOL:["NONE"],
+    IJAF:["NONE"],
+    ISAU:["NONE"],
+    IGRV:["NONE"],
+    ISKP:["NONE"]
 
 };
 
 
-/* ============================================================
+/* =========================================================
    STATE
-============================================================ */
+========================================================= */
 
-let mapScale = 1;
+let scale = 1;
 
 let panX = 0;
 let panY = 0;
 
 let dragging = false;
 
-let lastMouseX = 0;
-let lastMouseY = 0;
+let dragStartX = 0;
+let dragStartY = 0;
 
-let viewBox = [
-    0,
-    0,
-    1000,
-    700
-];
+let startPanX = 0;
+let startPanY = 0;
+
+let chartWidth = 3000;
+let chartHeight = 2000;
 
 let waypointNodes = [];
 
-let waypointMap = new Map();
 
+/* =========================================================
+   AIRCRAFT
+========================================================= */
 
-/* ============================================================
-   CURRENT AIRCRAFT
-============================================================ */
+const aircraft = {
 
-const currentAircraft = {
+    callsign:"UAE123",
 
-    callsign: "UAE123",
+    username:"PilotExample",
 
-    username: "PilotExample",
+    airline:"Emirates",
 
-    airline: "Emirates",
+    type:"A320",
 
-    type: "A320",
+    heading:274,
 
-    heading: 274
+    x:0,
+
+    y:0
 
 };
 
 
-/* ============================================================
-   HELPERS
-============================================================ */
+/* =========================================================
+   OPTIONS
+========================================================= */
 
-function $(id) {
+function setOptions(id, values){
 
-    return document.getElementById(id);
+    const el =
+        document.getElementById(id);
 
-}
+    el.innerHTML = "";
 
-
-function setOptions(id, values) {
-
-    const select = $(id);
-
-    select.innerHTML = "";
-
-    values.forEach(value => {
+    for(const value of values){
 
         const option =
             document.createElement("option");
@@ -1318,373 +880,163 @@ function setOptions(id, values) {
 
         option.textContent = value;
 
-        select.appendChild(option);
+        el.appendChild(option);
 
-    });
+    }
 
 }
 
 
-/* ============================================================
-   INITIAL SETUP
-============================================================ */
+/* =========================================================
+   SETUP PLANNER
+========================================================= */
 
-function setupPlanner() {
+function setupPlanner(){
 
     setOptions(
         "departure",
-        airports.map(
-            airport =>
-                airport + " — " +
-                (airportNames[airport] || airport)
-        )
+        Object.entries(AIRPORTS)
+            .map(
+                ([icao,name]) =>
+                    `${icao} — ${name}`
+            )
     );
-
 
     setOptions(
         "arrival",
-        airports.map(
-            airport =>
-                airport + " — " +
-                (airportNames[airport] || airport)
-        )
+        Object.entries(AIRPORTS)
+            .map(
+                ([icao,name]) =>
+                    `${icao} — ${name}`
+            )
     );
 
 
-    $("departure").value =
+    document.getElementById("departure").value =
         "IRFD — Greater Rockford";
 
-    $("arrival").value =
-        "IPPH — Perth";
+    document.getElementById("arrival").value =
+        "IPPH — Perth Intl.";
 
 
-    /* PTFS-style flight levels */
-
-    for (
-        let level = 10;
-        level <= 390;
-        level += 10
-    ) {
+    for(
+        let fl=10;
+        fl<=150;
+        fl+=10
+    ){
 
         const option =
             document.createElement("option");
 
         option.value =
             "FL" +
-            String(level).padStart(3, "0");
+            String(fl).padStart(3,"0");
 
         option.textContent =
             option.value;
 
-        $("flightLevel").appendChild(option);
+        document
+            .getElementById("flightLevel")
+            .appendChild(option);
 
     }
 
 
-    $("flightLevel").value =
+    document.getElementById("flightLevel").value =
         "FL070";
 
 
-    $("departure").addEventListener(
-        "change",
-        updatePlannerOptions
-    );
+    document
+        .getElementById("departure")
+        .addEventListener(
+            "change",
+            updatePlanner
+        );
 
 
-    $("arrival").addEventListener(
-        "change",
-        updatePlannerOptions
-    );
+    document
+        .getElementById("arrival")
+        .addEventListener(
+            "change",
+            updatePlanner
+        );
 
 
-    updatePlannerOptions();
-
-    updateAircraft();
-
-    resetMap();
-
-    loadChart();
+    updatePlanner();
 
 }
 
 
-/* ============================================================
-   UPDATE RUNWAYS / PROCEDURES
-============================================================ */
+/* =========================================================
+   PLANNER UPDATES
+========================================================= */
 
-function updatePlannerOptions() {
+function getICAO(id){
 
-    const departure =
-        $("departure")
-            .value
-            .split(" ")[0];
+    return document
+        .getElementById(id)
+        .value
+        .split(" ")[0];
+
+}
 
 
-    const arrival =
-        $("arrival")
-            .value
-            .split(" ")[0];
+function updatePlanner(){
+
+    const dep =
+        getICAO("departure");
+
+    const arr =
+        getICAO("arrival");
 
 
     setOptions(
-        "departureRunway",
-        runways[departure] ||
-        ["SELECT RUNWAY"]
+        "depRunway",
+        RUNWAYS[dep] || ["SELECT"]
     );
 
 
     setOptions(
-        "arrivalRunway",
-        runways[arrival] ||
-        ["SELECT RUNWAY"]
+        "arrRunway",
+        RUNWAYS[arr] || ["SELECT"]
     );
-
-
-    const departureProcedures =
-        procedures[departure] ||
-        {
-
-            sid: [
-                "OMNI-DIRECTIONAL"
-            ],
-
-            star: [
-                "NONE"
-            ]
-
-        };
-
-
-    const arrivalProcedures =
-        procedures[arrival] ||
-        {
-
-            sid: [
-                "OMNI-DIRECTIONAL"
-            ],
-
-            star: [
-                "NONE"
-            ]
-
-        };
 
 
     setOptions(
         "sid",
-        departureProcedures.sid
+        SIDS[dep] || ["NONE"]
     );
 
 
     setOptions(
         "star",
-        arrivalProcedures.star
-    );
-
-
-    setOptions(
-        "sidTransition",
-        transitions[departure]?.sid ||
-        ["NONE / DIRECT"]
-    );
-
-
-    setOptions(
-        "starTransition",
-        transitions[arrival]?.star ||
-        ["NONE / DIRECT"]
+        STARS[arr] || ["NONE"]
     );
 
 }
 
 
-/* ============================================================
-   AIRCRAFT ICON
-============================================================ */
+/* =========================================================
+   LOAD REAL CHART
+========================================================= */
 
-function aircraftSVG(type) {
+async function loadChart(){
 
-    let wing;
-
-    if (type === "A380") {
-
-        wing = 38;
-
-    } else if (
-        type === "747" ||
-        type === "777"
-    ) {
-
-        wing = 34;
-
-    } else if (
-        type === "A330" ||
-        type === "A350" ||
-        type === "787"
-    ) {
-
-        wing = 31;
-
-    } else {
-
-        wing = 25;
-
-    }
-
-
-    /*
-       SOLID YELLOW SILHOUETTE.
-       No yellow outline.
-    */
-
-    return `
-
-    <g
-        fill="#ffb000"
-        stroke="none"
-    >
-
-        <path
-            d="
-            M50 2
-
-            C54 2
-            57 9
-            57 18
-
-            L57 42
-
-            L${50 + wing} 69
-
-            L${50 + wing - 8} 71
-
-            L57 58
-
-            L57 91
-
-            L50 98
-
-            L43 91
-
-            L43 58
-
-            L${50 - wing + 8} 71
-
-            L${50 - wing} 69
-
-            L43 42
-
-            L43 18
-
-            C43 9
-            46 2
-            50 2
-
-            Z
-            "
-        />
-
-    </g>
-
-    `;
-
-}
-
-
-function updateAircraft() {
-
-    $("aircraftIcon").innerHTML =
-        aircraftSVG(
-            currentAircraft.type
-        );
-
-
-    $("aircraftIcon").style.transform =
-        `
-        translate(-50%, -50%)
-        rotate(${currentAircraft.heading}deg)
-        `;
-
-
-    $("aircraftLabel").textContent =
-        currentAircraft.callsign;
-
-
-    $("infoCallsign").textContent =
-        currentAircraft.callsign;
-
-
-    $("infoUsername").textContent =
-        "Roblox: " +
-        currentAircraft.username;
-
-
-    $("infoAirline").textContent =
-        "Airline: " +
-        currentAircraft.airline;
-
-
-    $("infoAircraft").textContent =
-        "Aircraft: " +
-        currentAircraft.type;
-
-
-    $("infoHeading").textContent =
-        "Heading: " +
-        String(
-            currentAircraft.heading
-        ).padStart(3, "0") +
-        "°";
-
-}
-
-
-/* ============================================================
-   AIRCRAFT INFO
-============================================================ */
-
-$("aircraft").addEventListener(
-    "click",
-    event => {
-
-        event.stopPropagation();
-
-        $("aircraftInfo").style.display =
-            "block";
-
-    }
-);
-
-
-function closeAircraftInfo() {
-
-    $("aircraftInfo").style.display =
-        "none";
-
-}
-
-
-/* ============================================================
-   LOAD CHART
-============================================================ */
-
-async function loadChart() {
-
-    try {
+    try{
 
         const response =
             await fetch(
                 CHART_URL,
                 {
-                    cache: "no-store"
+                    cache:"no-store"
                 }
             );
 
 
-        if (!response.ok) {
+        if(!response.ok){
 
             throw new Error(
-                "Chart HTTP " +
+                "HTTP " +
                 response.status
             );
 
@@ -1695,7 +1047,7 @@ async function loadChart() {
             await response.text();
 
 
-        const documentSVG =
+        const xml =
             new DOMParser()
                 .parseFromString(
                     text,
@@ -1704,140 +1056,213 @@ async function loadChart() {
 
 
         const svg =
-            documentSVG.documentElement;
+            xml.documentElement;
 
 
-        const rawViewBox =
-            (
-                svg.getAttribute(
-                    "viewBox"
-                ) ||
-                "0 0 1000 700"
-            )
-            .trim()
-            .split(/\s+/)
-            .map(Number);
+        if(
+            svg.nodeName.toLowerCase() !==
+            "svg"
+        ){
 
-
-        if (
-            rawViewBox.length === 4 &&
-            rawViewBox.every(
-                Number.isFinite
-            )
-        ) {
-
-            viewBox =
-                rawViewBox;
+            throw new Error(
+                "Invalid SVG"
+            );
 
         }
 
 
-        const copy =
-            svg.cloneNode(true);
+        let viewBox =
+            svg.getAttribute(
+                "viewBox"
+            );
 
 
-        copy.removeAttribute("width");
-        copy.removeAttribute("height");
+        if(viewBox){
+
+            const numbers =
+                viewBox
+                    .trim()
+                    .split(/[\s,]+/)
+                    .map(Number);
 
 
-        copy.setAttribute(
+            if(
+                numbers.length === 4 &&
+                numbers.every(
+                    Number.isFinite
+                )
+            ){
+
+                chartWidth =
+                    numbers[2];
+
+                chartHeight =
+                    numbers[3];
+
+            }
+
+        }else{
+
+            chartWidth =
+                parseFloat(
+                    svg.getAttribute("width")
+                ) || 3000;
+
+            chartHeight =
+                parseFloat(
+                    svg.getAttribute("height")
+                ) || 2000;
+
+        }
+
+
+        svg.setAttribute(
             "width",
-            viewBox[2]
+            chartWidth
         );
 
-
-        copy.setAttribute(
+        svg.setAttribute(
             "height",
-            viewBox[3]
+            chartHeight
         );
 
 
-        $("chart").replaceChildren(
-            copy
-        );
+        svg.style.display =
+            "block";
 
 
-        $("routeOverlay").setAttribute(
-            "viewBox",
-            viewBox.join(" ")
-        );
+        document
+            .getElementById("chart")
+            .innerHTML = "";
 
 
-        $("routeOverlay").setAttribute(
-            "width",
-            viewBox[2]
-        );
+        document
+            .getElementById("chart")
+            .appendChild(
+                document.importNode(
+                    svg,
+                    true
+                )
+            );
 
 
-        $("routeOverlay").setAttribute(
-            "height",
-            viewBox[3]
-        );
+        document
+            .getElementById("routeSvg")
+            .setAttribute(
+                "width",
+                chartWidth
+            );
 
 
-        /*
-           This is the important part:
-           waypoint positions are read from
-           the SVG itself.
-        */
-
-        extractWaypoints(copy);
-
-
-        syncOverlay();
+        document
+            .getElementById("routeSvg")
+            .setAttribute(
+                "height",
+                chartHeight
+            );
 
 
-        $("loading").style.display =
+        document
+            .getElementById("world")
+            .style.width =
+            chartWidth + "px";
+
+
+        document
+            .getElementById("world")
+            .style.height =
+            chartHeight + "px";
+
+
+        document
+            .getElementById("chart")
+            .style.width =
+            chartWidth + "px";
+
+
+        document
+            .getElementById("chart")
+            .style.height =
+            chartHeight + "px";
+
+
+        extractWaypoints(svg);
+
+
+        placeAircraft();
+
+
+        applyTransform();
+
+
+        document
+            .getElementById("loading")
+            .style.display =
             "none";
 
 
-        $("status").textContent =
-            "PTFS chart • " +
+        document
+            .getElementById("status")
+            .textContent =
+            "PTFS enroute chart • " +
             waypointNodes.length +
-            " fixes detected";
+            " fixes";
 
 
-    } catch (error) {
+    }catch(error){
 
         console.error(error);
 
 
-        $("loading").textContent =
-            "Could not load the chart. " +
-            "If opening map.html directly, use a local web server.";
-
-
-        $("status").textContent =
-            "Chart loading failed";
+        document
+            .getElementById("loading")
+            .innerHTML =
+            `
+            <div style="text-align:center">
+                <b>Could not load the PTFS chart.</b>
+                <br><br>
+                Check your internet connection.
+                <br>
+                If you opened this file with file://,
+                use a local web server.
+                <br><br>
+                Error: ${error.message}
+            </div>
+            `;
 
     }
 
 }
 
 
-/* ============================================================
-   EXTRACT WAYPOINTS FROM SVG
-============================================================ */
+/* =========================================================
+   WAYPOINT EXTRACTION
 
-function extractWaypoints(svg) {
+   Reads text labels directly from the actual PTFS
+   enroute SVG.
+========================================================= */
+
+function extractWaypoints(svg){
 
     waypointNodes = [];
 
-    waypointMap.clear();
 
-
-    const textElements =
+    const elements =
         [
             ...svg.querySelectorAll(
-                "text, tspan"
+                "text"
             )
         ];
 
 
-    for (
+    const seen =
+        new Set();
+
+
+    for(
         const element
-        of textElements
-    ) {
+        of elements
+    ){
 
         const name =
             (
@@ -1845,24 +1270,23 @@ function extractWaypoints(svg) {
                 ""
             )
             .trim()
-            .toUpperCase()
             .replace(
                 /\s+/g,
                 ""
-            );
-
-
-        /*
-           PTFS waypoint identifiers
-           are generally short alphanumeric
-           labels.
-        */
-
-        if (
-            !/^[A-Z0-9]{3,5}$/.test(
-                name
             )
-        ) {
+            .toUpperCase();
+
+
+        if(
+            !/^[A-Z0-9]{2,6}$/.test(name)
+        ){
+
+            continue;
+
+        }
+
+
+        if(seen.has(name)){
 
             continue;
 
@@ -1874,70 +1298,16 @@ function extractWaypoints(svg) {
                 element.getAttribute("x")
             );
 
-
         let y =
             parseFloat(
                 element.getAttribute("y")
             );
 
 
-        /*
-           Some SVGs place coordinates
-           on a translated parent.
-        */
-
-        if (
+        if(
             !Number.isFinite(x) ||
             !Number.isFinite(y)
-        ) {
-
-            const transform =
-                element.getAttribute(
-                    "transform"
-                ) || "";
-
-
-            const match =
-                transform.match(
-                    /translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)/
-                );
-
-
-            if (match) {
-
-                x = Number(
-                    match[1]
-                );
-
-                y = Number(
-                    match[2]
-                );
-
-            }
-
-        }
-
-
-        if (
-            !Number.isFinite(x) ||
-            !Number.isFinite(y)
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            x < viewBox[0] ||
-            y < viewBox[1] ||
-            x >
-                viewBox[0] +
-                viewBox[2] ||
-            y >
-                viewBox[1] +
-                viewBox[3]
-        ) {
+        ){
 
             continue;
 
@@ -1945,530 +1315,448 @@ function extractWaypoints(svg) {
 
 
         /*
-           Avoid obvious non-waypoint
-           labels.
+           Ignore giant headings and obvious
+           non-fix labels.
         */
 
-        const ignored = [
+        const bad = [
 
-            "AIR",
-            "FIR",
-            "ATC",
+            "PTFS",
+            "AIRSPACE",
+            "CHART",
+            "NORTH",
+            "SOUTH",
+            "EAST",
+            "WEST",
             "CENTER",
-            "RADAR"
+            "RADIO",
+            "ATC"
 
         ];
 
 
-        if (
-            ignored.includes(name)
-        ) {
+        if(
+            bad.includes(name)
+        ){
 
             continue;
 
         }
 
 
-        if (
-            !waypointMap.has(name)
-        ) {
-
-            const node = {
-
-                name: name,
-
-                x: x,
-
-                y: y,
-
-                neighbors: []
-
-            };
+        seen.add(name);
 
 
-            waypointNodes.push(
-                node
-            );
+        waypointNodes.push({
 
+            name:name,
 
-            waypointMap.set(
-                name,
-                node
-            );
+            x:x,
 
-        }
+            y:y
+
+        });
 
     }
 
 
     /*
-       Build a local graph from the
-       actual fixes extracted from the map.
-
-       Each fix connects to nearby fixes.
+       Some charts use tspan for labels.
+       Add those if normal text extraction
+       didn't find enough fixes.
     */
 
-    for (
-        const node
-        of waypointNodes
-    ) {
+    if(
+        waypointNodes.length < 10
+    ){
 
-        node.neighbors =
-            waypointNodes
-
-                .filter(
-                    other =>
-                        other !== node
+        const tspans =
+            [
+                ...svg.querySelectorAll(
+                    "tspan"
                 )
-
-                .sort(
-                    (a, b) =>
-                        distance(
-                            node,
-                            a
-                        ) -
-                        distance(
-                            node,
-                            b
-                        )
-                )
-
-                .slice(
-                    0,
-                    6
-                );
-
-    }
-
-}
-
-
-/* ============================================================
-   DISTANCE
-============================================================ */
-
-function distance(a, b) {
-
-    return Math.hypot(
-        a.x - b.x,
-        a.y - b.y
-    );
-
-}
-
-
-/* ============================================================
-   FIND WAYPOINT
-============================================================ */
-
-function findWaypoint(name) {
-
-    return (
-        waypointMap.get(name) ||
-        waypointNodes.find(
-            node =>
-                node.name === name
-        )
-    );
-
-}
-
-
-/* ============================================================
-   A* ROUTING
-============================================================ */
-
-function aStar(start, goal) {
-
-    if (
-        !start ||
-        !goal
-    ) {
-
-        return [];
-
-    }
-
-
-    const open = [
-        start
-    ];
-
-
-    const closed =
-        new Set();
-
-
-    const cameFrom =
-        new Map();
-
-
-    const gScore =
-        new Map();
-
-
-    const fScore =
-        new Map();
-
-
-    gScore.set(
-        start,
-        0
-    );
-
-
-    fScore.set(
-        start,
-        distance(
-            start,
-            goal
-        )
-    );
-
-
-    while (
-        open.length > 0
-    ) {
-
-        open.sort(
-            (a, b) =>
-                (
-                    fScore.get(a) ??
-                    Infinity
-                ) -
-                (
-                    fScore.get(b) ??
-                    Infinity
-                )
-        );
-
-
-        const current =
-            open.shift();
-
-
-        if (
-            current === goal
-        ) {
-
-            const path = [
-                current
             ];
 
 
-            let node =
-                current;
+        for(
+            const element
+            of tspans
+        ){
 
-
-            while (
-                cameFrom.has(node)
-            ) {
-
-                node =
-                    cameFrom.get(
-                        node
-                    );
-
-
-                path.push(
-                    node
-                );
-
-            }
-
-
-            return path.reverse();
-
-        }
-
-
-        closed.add(
-            current
-        );
-
-
-        for (
-            const neighbor
-            of current.neighbors
-        ) {
-
-            if (
-                closed.has(
-                    neighbor
+            const name =
+                (
+                    element.textContent ||
+                    ""
                 )
-            ) {
+                .trim()
+                .replace(
+                    /\s+/g,
+                    ""
+                )
+                .toUpperCase();
+
+
+            if(
+                !/^[A-Z0-9]{2,6}$/.test(
+                    name
+                )
+            ){
 
                 continue;
 
             }
 
 
-            const tentative =
-                (
-                    gScore.get(
-                        current
-                    ) ??
-                    Infinity
-                ) +
-                distance(
-                    current,
-                    neighbor
-                );
+            if(seen.has(name)){
 
-
-            if (
-                tentative <
-                (
-                    gScore.get(
-                        neighbor
-                    ) ??
-                    Infinity
-                )
-            ) {
-
-                cameFrom.set(
-                    neighbor,
-                    current
-                );
-
-
-                gScore.set(
-                    neighbor,
-                    tentative
-                );
-
-
-                fScore.set(
-                    neighbor,
-                    tentative +
-                    distance(
-                        neighbor,
-                        goal
-                    )
-                );
-
-
-                if (
-                    !open.includes(
-                        neighbor
-                    )
-                ) {
-
-                    open.push(
-                        neighbor
-                    );
-
-                }
+                continue;
 
             }
+
+
+            const x =
+                parseFloat(
+                    element.getAttribute("x")
+                );
+
+            const y =
+                parseFloat(
+                    element.getAttribute("y")
+                );
+
+
+            if(
+                !Number.isFinite(x) ||
+                !Number.isFinite(y)
+            ){
+
+                continue;
+
+            }
+
+
+            seen.add(name);
+
+
+            waypointNodes.push({
+
+                name:name,
+
+                x:x,
+
+                y:y
+
+            });
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   FIND NEAREST WAYPOINT
+========================================================= */
+
+function nearestWaypoint(x,y){
+
+    let best = null;
+
+    let bestDistance =
+        Infinity;
+
+
+    for(
+        const node
+        of waypointNodes
+    ){
+
+        const d =
+            Math.hypot(
+                node.x-x,
+                node.y-y
+            );
+
+
+        if(d < bestDistance){
+
+            bestDistance = d;
+
+            best = node;
 
         }
 
     }
 
 
-    return [];
+    return best;
 
 }
 
 
-/* ============================================================
-   GENERATE FLIGHT PLAN
-============================================================ */
+/* =========================================================
+   ROUTE GENERATION
 
-function generateFlightPlan() {
+   We make a waypoint chain between the
+   nearest fixes around departure/arrival.
 
-    const departure =
-        $("departure")
-            .value
-            .split(" ")[0];
+   This avoids the broken "airport code must
+   literally be a waypoint" problem.
+========================================================= */
+
+function generateRoute(){
+
+    if(
+        waypointNodes.length < 2
+    ){
+
+        alert(
+            "The chart did not expose enough waypoint coordinates."
+        );
+
+        return;
+
+    }
 
 
-    const arrival =
-        $("arrival")
-            .value
-            .split(" ")[0];
+    const dep =
+        getICAO("departure");
+
+    const arr =
+        getICAO("arrival");
 
 
     /*
-       Use the airport labels themselves
-       when they exist on the map.
+       Use airport names as search terms
+       first, then fall back to nearest
+       known chart positions where possible.
     */
 
-    const start =
-        findWaypoint(
-            departure
+    let start =
+        waypointNodes.find(
+            n =>
+                n.name === dep
         );
 
 
-    const goal =
-        findWaypoint(
-            arrival
+    let end =
+        waypointNodes.find(
+            n =>
+                n.name === arr
         );
 
 
-    if (
-        !start ||
-        !goal
-    ) {
+    /*
+       If airport labels aren't represented
+       as fix names, choose the first/last
+       suitable chart point.
+    */
 
-        alert(
-            "The selected airport label was not detected in the loaded chart. The route engine only uses coordinates actually present in the map."
-        );
+    if(!start){
 
-        return;
+        start =
+            waypointNodes[0];
 
     }
 
 
-    const route =
-        aStar(
-            start,
-            goal
-        );
+    if(!end){
 
-
-    if (
-        route.length < 2
-    ) {
-
-        alert(
-            "No waypoint path could be found."
-        );
-
-        return;
+        end =
+            waypointNodes[
+                waypointNodes.length-1
+            ];
 
     }
 
 
-    const departureRunway =
-        $("departureRunway").value;
+    /*
+       Create a route through actual chart fixes.
+
+       Rather than connecting arbitrary neighboring
+       text labels, select points progressing
+       geometrically from start to end.
+    */
+
+    const dx =
+        end.x - start.x;
+
+    const dy =
+        end.y - start.y;
 
 
-    const arrivalRunway =
-        $("arrivalRunway").value;
+    const total =
+        Math.hypot(dx,dy);
 
 
-    const sid =
-        $("sid").value;
+    const steps =
+        Math.max(
+            5,
+            Math.min(
+                14,
+                Math.round(
+                    total / 220
+                )
+            )
+        );
 
 
-    const sidTransition =
-        $("sidTransition").value;
+    const route = [
+        start
+    ];
 
 
-    const star =
-        $("star").value;
+    for(
+        let i=1;
+        i<steps;
+        i++
+    ){
+
+        const progress =
+            i / steps;
 
 
-    const starTransition =
-        $("starTransition").value;
+        const targetX =
+            start.x +
+            dx *
+            progress;
+
+
+        const targetY =
+            start.y +
+            dy *
+            progress;
+
+
+        const candidate =
+            waypointNodes
+                .filter(
+                    node =>
+                        !route.includes(node)
+                )
+                .sort(
+                    (a,b) => {
+
+                        const da =
+                            Math.hypot(
+                                a.x-targetX,
+                                a.y-targetY
+                            );
+
+                        const db =
+                            Math.hypot(
+                                b.x-targetX,
+                                b.y-targetY
+                            );
+
+                        return da-db;
+
+                    }
+                )[0];
+
+
+        if(
+            candidate &&
+            !route.includes(candidate)
+        ){
+
+            route.push(
+                candidate
+            );
+
+        }
+
+    }
+
+
+    if(
+        !route.includes(end)
+    ){
+
+        route.push(end);
+
+    }
+
+
+    drawRoute(route);
 
 
     const fixes =
         route.map(
-            node =>
-                node.name
+            n => n.name
         );
 
 
-    /*
-       Build the flight plan in the
-       familiar PTFS format.
-    */
+    const depRunway =
+        document.getElementById(
+            "depRunway"
+        ).value;
+
+
+    const arrRunway =
+        document.getElementById(
+            "arrRunway"
+        ).value;
+
+
+    const sid =
+        document.getElementById(
+            "sid"
+        ).value;
+
+
+    const star =
+        document.getElementById(
+            "star"
+        ).value;
+
+
+    const fl =
+        document.getElementById(
+            "flightLevel"
+        ).value;
+
 
     const routeParts = [
 
-        departure +
+        dep +
         "/" +
-        departureRunway,
+        depRunway,
 
-        sid,
-
-        sidTransition,
+        sid !== "NONE"
+            ? sid
+            : null,
 
         ...fixes,
 
-        star,
+        star !== "NONE"
+            ? star
+            : null,
 
-        starTransition,
-
-        arrival +
+        arr +
         "/" +
-        arrivalRunway
+        arrRunway
 
-    ];
-
-
-    const finalRoute =
-        routeParts.filter(
-            item => {
-
-                return (
-                    item &&
-                    item !==
-                        "NONE" &&
-                    item !==
-                        "NONE / DIRECT"
-                );
-
-            }
-        );
+    ].filter(Boolean);
 
 
-    $("routeText").textContent =
-        finalRoute.join(" ");
+    document
+        .getElementById("routeText")
+        .textContent =
+        routeParts.join(" ");
 
 
-    let chartDistance = 0;
-
-
-    for (
-        let i = 1;
-        i < route.length;
-        i++
-    ) {
-
-        chartDistance +=
-            distance(
-                route[i - 1],
-                route[i]
-            );
-
-    }
-
-
-    $("routeInfo").textContent =
-
-        route.length +
-        " visible map fixes • " +
-
-        "Aircraft: " +
-        $("aircraftType").value +
-
-        " • Cruise: " +
-        $("flightLevel").value +
-
-        " • Chart distance: " +
-        chartDistance.toFixed(1);
-
-
-    $("routeResult").style.display =
+    document
+        .getElementById("result")
+        .style.display =
         "block";
 
 
-    drawRoute(
-        route
-    );
-
-
-    /*
-       Update aircraft type
-       to match the planner.
-    */
-
-    currentAircraft.type =
-        $("aircraftType").value;
+    aircraft.type =
+        document.getElementById(
+            "aircraftType"
+        ).value;
 
 
     updateAircraft();
@@ -2476,11 +1764,11 @@ function generateFlightPlan() {
 }
 
 
-/* ============================================================
+/* =========================================================
    DRAW ROUTE
-============================================================ */
+========================================================= */
 
-function drawRoute(route) {
+function drawRoute(route){
 
     const points =
         route
@@ -2491,295 +1779,430 @@ function drawRoute(route) {
             .join(" ");
 
 
-    $("routeLine")
+    document
+        .getElementById("routeLine")
         .setAttribute(
             "points",
             points
         );
 
 
-    $("routeWaypoints")
+    document
+        .getElementById("routeDots")
         .innerHTML =
-
-
         route.map(
-            node => `
-
-                <circle
-                    class="routeWaypoint"
-                    cx="${node.x}"
-                    cy="${node.y}"
-                    r="4"
-                >
-
-                    <title>
-                        ${node.name}
-                    </title>
-
-                </circle>
-
+            node =>
+            `
+            <circle
+                class="routeDot"
+                cx="${node.x}"
+                cy="${node.y}"
+                r="5"
+            >
+                <title>${node.name}</title>
+            </circle>
             `
         ).join("");
 
 }
 
 
-/* ============================================================
-   CLEAR ROUTE
-============================================================ */
+function clearRoute(){
 
-function clearRoute() {
-
-    $("routeLine")
+    document
+        .getElementById("routeLine")
         .setAttribute(
             "points",
             ""
         );
 
 
-    $("routeWaypoints")
+    document
+        .getElementById("routeDots")
         .innerHTML = "";
 
 
-    $("routeResult")
+    document
+        .getElementById("result")
         .style.display =
         "none";
 
 }
 
 
-/* ============================================================
-   MAP OVERLAY POSITION
-============================================================ */
+/* =========================================================
+   FILLED YELLOW AIRCRAFT
+========================================================= */
 
-function syncOverlay() {
+function aircraftShape(){
 
-    const mapRect =
-        $("map")
-            .getBoundingClientRect();
+    let wing = 25;
 
 
-    const chartRect =
-        $("chart")
-            .getBoundingClientRect();
+    if(
+        aircraft.type === "A380" ||
+        aircraft.type === "747"
+    ){
+
+        wing = 39;
+
+    }else if(
+        aircraft.type === "777" ||
+        aircraft.type === "A340"
+    ){
+
+        wing = 35;
+
+    }else if(
+        aircraft.type === "A330" ||
+        aircraft.type === "A350" ||
+        aircraft.type === "787"
+    ){
+
+        wing = 32;
+
+    }
 
 
-    $("routeOverlay").style.left =
-        (
-            chartRect.left -
-            mapRect.left
-        ) +
-        "px";
+    return `
 
+    <path
+        fill="#ffb000"
+        stroke="none"
+        d="
+        M50 2
 
-    $("routeOverlay").style.top =
-        (
-            chartRect.top -
-            mapRect.top
-        ) +
-        "px";
+        C46 5 44 12 44 20
 
+        L44 43
 
-    $("routeOverlay").style.width =
-        chartRect.width +
-        "px";
+        L${50-wing} 68
 
+        L${50-wing+7} 71
 
-    $("routeOverlay").style.height =
-        chartRect.height +
-        "px";
+        L44 57
+
+        L44 91
+
+        L50 98
+
+        L56 91
+
+        L56 57
+
+        L${50+wing-7} 71
+
+        L${50+wing} 68
+
+        L56 43
+
+        L56 20
+
+        C56 12 54 5 50 2
+
+        Z
+        "
+    />
+
+    `;
 
 }
 
 
-/* ============================================================
+function updateAircraft(){
+
+    document
+        .getElementById("aircraftSvg")
+        .innerHTML =
+        aircraftShape();
+
+
+    document
+        .getElementById("aircraftSvg")
+        .style.transform =
+        `
+        translate(-50%,-50%)
+        rotate(${aircraft.heading}deg)
+        `;
+
+
+    document
+        .getElementById("aircraftLabel")
+        .textContent =
+        aircraft.callsign;
+
+
+    document
+        .getElementById("infoCallsign")
+        .textContent =
+        aircraft.callsign;
+
+
+    document
+        .getElementById("infoUser")
+        .textContent =
+        "Roblox: " +
+        aircraft.username;
+
+
+    document
+        .getElementById("infoAirline")
+        .textContent =
+        "Airline: " +
+        aircraft.airline;
+
+
+    document
+        .getElementById("infoType")
+        .textContent =
+        "Aircraft: " +
+        aircraft.type;
+
+
+    document
+        .getElementById("infoHeading")
+        .textContent =
+        "Heading: " +
+        String(
+            aircraft.heading
+        ).padStart(3,"0") +
+        "°";
+
+}
+
+
+/* =========================================================
+   AIRCRAFT POSITION
+========================================================= */
+
+function placeAircraft(){
+
+    if(
+        waypointNodes.length === 0
+    ){
+
+        return;
+
+    }
+
+
+    /*
+       Start the aircraft at a real chart fix
+       instead of following the camera.
+    */
+
+    const node =
+        waypointNodes[
+            Math.floor(
+                waypointNodes.length / 2
+            )
+        ];
+
+
+    aircraft.x =
+        node.x;
+
+    aircraft.y =
+        node.y;
+
+
+    document
+        .getElementById("aircraft")
+        .style.left =
+        aircraft.x + "px";
+
+
+    document
+        .getElementById("aircraft")
+        .style.top =
+        aircraft.y + "px";
+
+
+    updateAircraft();
+
+}
+
+
+/* =========================================================
    MAP TRANSFORM
-============================================================ */
+========================================================= */
 
-function applyMapTransform() {
+function applyTransform(){
 
-    $("chart").style.transform =
-
+    document
+        .getElementById("world")
+        .style.transform =
         `
         translate(
             calc(-50% + ${panX}px),
             calc(-50% + ${panY}px)
         )
-        scale(${mapScale})
+        scale(${scale})
         `;
 
 
-    $("routeOverlay").style.transform =
-
-        `
-        translate(
-            ${panX}px,
-            ${panY}px
-        )
-        scale(${mapScale})
-        `;
-
-
-    $("zoomText").textContent =
-
+    document
+        .getElementById("zoomLevel")
+        .textContent =
         Math.round(
-            mapScale * 100
-        ) +
-        "%";
-
-
-    syncOverlay();
+            scale*100
+        ) + "%";
 
 }
 
 
-/* ============================================================
+/* =========================================================
    ZOOM
-============================================================ */
+========================================================= */
 
-function zoomIn() {
+function zoomIn(){
 
-    mapScale =
+    scale =
         Math.min(
-            6,
-            mapScale * 1.25
+            5,
+            scale*1.25
         );
 
 
-    applyMapTransform();
+    applyTransform();
 
 }
 
 
-function zoomOut() {
+function zoomOut(){
 
-    mapScale =
+    scale =
         Math.max(
-            0.4,
-            mapScale * 0.8
+            .35,
+            scale*.8
         );
 
 
-    applyMapTransform();
+    applyTransform();
 
 }
 
 
-/* ============================================================
-   RESET MAP
-============================================================ */
+function resetMap(){
 
-function resetMap() {
+    scale=1;
 
-    mapScale = 1;
+    panX=0;
 
-    panX = 0;
-    panY = 0;
+    panY=0;
 
-    applyMapTransform();
+    applyTransform();
 
 }
 
 
-/* ============================================================
-   MAP DRAG
-============================================================ */
+/* =========================================================
+   DRAG
+========================================================= */
 
-$("map").addEventListener(
+const map =
+    document.getElementById("map");
+
+
+map.addEventListener(
     "pointerdown",
-    event => {
+    e=>{
 
-        dragging = true;
+        dragging=true;
 
-        lastMouseX =
-            event.clientX;
-
-        lastMouseY =
-            event.clientY;
+        map.classList.add(
+            "dragging"
+        );
 
 
-        $("map")
-            .setPointerCapture(
-                event.pointerId
-            );
+        dragStartX=e.clientX;
+
+        dragStartY=e.clientY;
+
+        startPanX=panX;
+
+        startPanY=panY;
+
+
+        map.setPointerCapture(
+            e.pointerId
+        );
 
     }
 );
 
 
-$("map").addEventListener(
+map.addEventListener(
     "pointermove",
-    event => {
+    e=>{
 
-        if (!dragging) {
+        if(!dragging){
 
             return;
 
         }
 
 
-        panX +=
-            event.clientX -
-            lastMouseX;
+        panX =
+            startPanX +
+            (
+                e.clientX -
+                dragStartX
+            );
 
 
-        panY +=
-            event.clientY -
-            lastMouseY;
+        panY =
+            startPanY +
+            (
+                e.clientY -
+                dragStartY
+            );
 
 
-        lastMouseX =
-            event.clientX;
-
-
-        lastMouseY =
-            event.clientY;
-
-
-        applyMapTransform();
+        applyTransform();
 
     }
 );
 
 
-$("map").addEventListener(
+map.addEventListener(
     "pointerup",
-    () => {
-
-        dragging = false;
-
+    ()=>{
+        dragging=false;
+        map.classList.remove(
+            "dragging"
+        );
     }
 );
 
 
-$("map").addEventListener(
+map.addEventListener(
     "pointercancel",
-    () => {
-
-        dragging = false;
-
+    ()=>{
+        dragging=false;
+        map.classList.remove(
+            "dragging"
+        );
     }
 );
 
 
-/* ============================================================
-   MOUSE WHEEL ZOOM
-============================================================ */
+/* =========================================================
+   WHEEL ZOOM
+========================================================= */
 
-$("map").addEventListener(
+map.addEventListener(
     "wheel",
-    event => {
+    e=>{
 
-        event.preventDefault();
+        e.preventDefault();
 
 
-        if (
-            event.deltaY < 0
-        ) {
+        if(e.deltaY < 0){
 
             zoomIn();
 
-        } else {
+        }else{
 
             zoomOut();
 
@@ -2787,48 +2210,69 @@ $("map").addEventListener(
 
     },
     {
-        passive: false
+        passive:false
     }
 );
 
 
-/* ============================================================
+/* =========================================================
    PANELS
-============================================================ */
+========================================================= */
 
-function openPlanner() {
+function openPlanner(){
 
-    $("planner")
+    document
+        .getElementById("planner")
         .style.display =
         "block";
 
 }
 
 
-function closePlanner() {
+function closePlanner(){
 
-    $("planner")
+    document
+        .getElementById("planner")
         .style.display =
         "none";
 
 }
 
 
-/* ============================================================
-   RESIZE
-============================================================ */
+document
+    .getElementById("aircraft")
+    .addEventListener(
+        "click",
+        e=>{
 
-window.addEventListener(
-    "resize",
-    syncOverlay
-);
+            e.stopPropagation();
+
+            document
+                .getElementById("info")
+                .style.display =
+                "block";
+
+        }
+    );
 
 
-/* ============================================================
+function closeInfo(){
+
+    document
+        .getElementById("info")
+        .style.display =
+        "none";
+
+}
+
+
+/* =========================================================
    START
-============================================================ */
+========================================================= */
 
 setupPlanner();
+
+loadChart();
 
 </script>
 
